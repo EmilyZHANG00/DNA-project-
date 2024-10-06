@@ -382,20 +382,22 @@ def decode_remove_zero_separator(DNA_arr, indices):
             pos1, pos2 = sorted(random.sample(range(len(a_arr) + 1), 2))
             a_arr = np.concatenate(
                 (a_arr[:pos1], [random.randint(0, 3)], a_arr[pos1:pos2], [random.randint(0, 3)], a_arr[pos2:]))
-            c_arr = np.delete(c_encode_arr, deleted_indices)
-            d_arr = np.delete(d_encode_arr, deleted_indices)
         elif len(b_arr) == length - 2:
             pos1, pos2 = sorted(random.sample(range(len(b_arr) + 1), 2))
-            b_arr = np.array([x for i, x in enumerate(b_arr) if i not in (pos1, pos2)] + [random.randint(0, 3),
-                                                                                          random.randint(0, 3)])
-            c_arr = np.delete(c_encode_arr, deleted_indices)
-            d_arr = np.delete(d_encode_arr, deleted_indices)
+            b_arr = np.concatenate(
+                (b_arr[:pos1], [random.randint(0, 3)], b_arr[pos1:pos2], [random.randint(0, 3)], b_arr[pos2:]))
         elif len(c_encode_arr) == encode_length - 2:
-            c_arr = np.delete(c_encode_arr, deleted_indices)
-            d_arr = np.delete(d_encode_arr, deleted_indices)
+            pos1, pos2 = sorted(random.sample(range(len(c_encode_arr) + 1), 2))
+            c_encode_arr = np.concatenate(
+                (c_encode_arr[:pos1], [random.randint(0, 3)], c_encode_arr[pos1:pos2], [random.randint(0, 3)],
+                 c_encode_arr[pos2:]))
         elif len(d_encode_arr) == encode_length - 2:
-            c_arr = np.delete(c_encode_arr, deleted_indices)
-            d_arr = np.delete(d_encode_arr, deleted_indices)
+            pos1, pos2 = sorted(random.sample(range(len(d_encode_arr) + 1), 2))
+            d_encode_arr = np.concatenate(
+                (d_encode_arr[:pos1], [random.randint(0, 3)], d_encode_arr[pos1:pos2], [random.randint(0, 3)],
+                 d_encode_arr[pos2:]))
+        c_arr = np.delete(c_encode_arr, deleted_indices)
+        d_arr = np.delete(d_encode_arr, deleted_indices)
         ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
         cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
         return np.concatenate((ab_DNA, cd_DNA))

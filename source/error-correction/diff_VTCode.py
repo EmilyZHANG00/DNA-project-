@@ -140,20 +140,20 @@ def dec_diff_vt(c_prime, a):
 
 # test
 
-# prompt: generate random q-ary string
-def generate_q_ary_string(length, q):
-    """Generates a random q-ary string of the given length."""
-    return np.array([random.randint(0, q - 1) for _ in range(length)])
-
-
-# prompt: generate the single deletion ball of string x
-def generate_single_deletion_ball(x):
-    """Generates the single deletion ball for a given string x."""
-    ball = set()
-    x = "".join([str(num) for num in x])
-    for i in range(len(x)):
-        ball.add(x[:i] + x[i + 1:])
-    return ball
+# # prompt: generate random q-ary string
+# def generate_q_ary_string(length, q):
+#     """Generates a random q-ary string of the given length."""
+#     return np.array([random.randint(0, q - 1) for _ in range(length)])
+#
+#
+# # prompt: generate the single deletion ball of string x
+# def generate_single_deletion_ball(x):
+#     """Generates the single deletion ball for a given string x."""
+#     ball = set()
+#     x = "".join([str(num) for num in x])
+#     for i in range(len(x)):
+#         ball.add(x[:i] + x[i + 1:])
+#     return ball
 
 #
 # string = generate_q_ary_string(60, 4)

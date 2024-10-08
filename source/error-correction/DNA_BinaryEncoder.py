@@ -69,9 +69,100 @@ def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
         elif len(encode_DNA[i]) == total_length - 2:  # 二删
             arr = decode_from_two_deletions(np.array(list(encode_DNA[i])))
         else:  # 多删
-            arr = np.array(['A' for i in range(length * 4)])
+            arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))
         result.append("".join(arr))
     return np.array(result)
+
+
+def decode_from_multi_deletions(DNA_arr):  # 处理多删
+    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    DNA_arr = DNA2quaternary_arr(DNA_arr)
+    length = config.SEGMENT_LEN
+    encode_length = config.ENCODE_LEN
+    deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
+    if len(indices) == 3:
+        a_arr = DNA_arr[:indices[0]]
+        b_arr = DNA_arr[indices[0] + 1:indices[1]]
+        c_encode_arr = DNA_arr[indices[1] + 1:indices[2]]
+        d_encode_arr = DNA_arr[indices[2] + 1:]
+    elif len(indices) == 2:
+        if indices[0] > length:
+            ab_arr = DNA_arr[:indices[0]]
+            c_encode_arr = DNA_arr[indices[0] + 1:indices[1]]
+            d_encode_arr = DNA_arr[indices[1] + 1:]
+            del_size = 2 * length - len(ab_arr)
+            a_arr = ab_arr[:length - del_size]
+            b_arr = ab_arr[-(length - del_size):]
+        elif indices[0] <= length and indices[1] <= 2 * length + 1:
+            a_arr = DNA_arr[:indices[0]]
+            b_arr = DNA_arr[indices[0] + 1:indices[1]]
+            cd_encode_arr = DNA_arr[indices[1] + 1:]
+            del_size = 2 * encode_length - len(cd_encode_arr)
+            c_encode_arr = cd_encode_arr[:encode_length - del_size]
+            d_encode_arr = cd_encode_arr[-(encode_length - del_size):]
+        else:
+            a_arr = DNA_arr[:indices[0]]
+            bc_encode_arr = DNA_arr[indices[0] + 1:indices[1]]
+            d_encode_arr = DNA_arr[indices[1] + 1:]
+            del_size = length + encode_length - len(bc_encode_arr)
+            b_arr = bc_encode_arr[:length - del_size]
+            c_encode_arr = bc_encode_arr[-(encode_length - del_size):]
+    elif len(indices) == 1:
+        if indices[0] <= length:
+            a_arr = DNA_arr[:indices[0]]
+            bcd_encode_arr = DNA_arr[indices[0] + 1:]
+            del_size = length + 2 * encode_length - len(bcd_encode_arr)
+            b_arr = bcd_encode_arr[:length - del_size]
+            c_encode_arr = bcd_encode_arr[length:length + encode_length - del_size]
+            d_encode_arr = bcd_encode_arr[-(encode_length - del_size):]
+        elif indices[0] <= 2 * length + 1:
+            ab_arr = DNA_arr[:indices[0]]
+            del_size = 2 * length - len(ab_arr)
+            a_arr = ab_arr[:length - del_size]
+            b_arr = ab_arr[-(length - del_size):]
+            cd_encode_arr = DNA_arr[indices[0] + 1:]
+            del_size = 2 * encode_length - len(cd_encode_arr)
+            c_encode_arr = cd_encode_arr[:encode_length - del_size]
+            d_encode_arr = cd_encode_arr[-(encode_length - del_size):]
+        else:
+            abc_encode_arr = DNA_arr[:indices[0]]
+            d_encode_arr = DNA_arr[indices[0] + 1:]
+            del_size = 2 * length + encode_length - len(abc_encode_arr)
+            a_arr = abc_encode_arr[:length - del_size]
+            b_arr = abc_encode_arr[length:2 * length - del_size]
+            c_encode_arr = abc_encode_arr[-(encode_length - del_size):]
+    else:
+        abcd_encode_arr = DNA_arr
+        del_size = 2 * (length + encode_length) - len(abcd_encode_arr)
+        a_arr = abcd_encode_arr[:length - del_size]
+        b_arr = abcd_encode_arr[length:2 * length - del_size]
+        c_encode_arr = abcd_encode_arr[2 * length:2 * length + encode_length - del_size]
+        d_encode_arr = abcd_encode_arr[-(encode_length - del_size):]
+    if len(a_arr) < length:
+        k = length - len(a_arr)
+        positions = np.sort(np.random.choice(len(a_arr) + 1, k, replace=False))
+        values_to_insert = np.random.randint(0, 4, k)
+        a_arr = np.insert(a_arr, positions, values_to_insert)
+    if len(b_arr) < length:
+        k = length - len(b_arr)
+        positions = np.sort(np.random.choice(len(b_arr) + 1, k, replace=False))
+        values_to_insert = np.random.randint(0, 4, k)
+        b_arr = np.insert(b_arr, positions, values_to_insert)
+    if len(c_encode_arr) < encode_length:
+        k = encode_length - len(c_encode_arr)
+        positions = np.sort(np.random.choice(len(c_encode_arr) + 1, k, replace=False))
+        values_to_insert = np.random.randint(0, 4, k)
+        c_encode_arr = np.insert(c_encode_arr, positions, values_to_insert)
+    if len(d_encode_arr) < encode_length:
+        k = encode_length - len(d_encode_arr)
+        positions = np.sort(np.random.choice(len(d_encode_arr) + 1, k, replace=False))
+        values_to_insert = np.random.randint(0, 4, k)
+        d_encode_arr = np.insert(d_encode_arr, positions, values_to_insert)
+    c_arr = np.delete(c_encode_arr, deleted_indices)
+    d_arr = np.delete(d_encode_arr, deleted_indices)
+    ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
+    cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
+    return np.concatenate((ab_DNA, cd_DNA))
 
 
 def decode_from_no_deletion(DNA_arr):

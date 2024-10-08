@@ -6,7 +6,7 @@ from utils import *
 
 
 def VT_decode(d, a):
-    modulo = config.modulo
+    modulo = config.binary_modulo
     n = len(d) + 1
     ones_indices = np.where(d == 1)[0] + 1
     zero_indices = np.where(d == 0)[0] + 1
@@ -194,7 +194,7 @@ def solve_linear_congruence(A, B):  # 解带余二元一次方程组
     b2 = A[1][1]
     c1 = B[0]
     c2 = B[1]
-    p = config.modulo
+    p = config.binary_modulo
     inv_a1 = mod_inverse(a1, p)
     inv_a2 = mod_inverse(a2, p)
     # 从第一个方程解出 x
@@ -213,7 +213,7 @@ def solve_linear_congruence(A, B):  # 解带余二元一次方程组
 def solve_linear_system(a_arr, b_arr, a, b, c, d):
     Belta = config.Belta
     Gamma = config.Gamma
-    modulo = config.modulo
+    modulo = config.binary_modulo
     indices = np.where((a_arr & 1) == 1)[0] + 1
     low_a = np.sum(indices) % modulo
     indices = np.where(((a_arr >> 1) & 1) == 1)[0] + 1
@@ -234,7 +234,6 @@ def solve_linear_system(a_arr, b_arr, a, b, c, d):
 
 
 def decode_remove_two_separators(DNA_arr, indices):
-    # 函数实现，从字符串中删除2个分隔符
     length = config.SEGMENT_LEN
     encode_length = config.ENCODE_LEN
     a_arr = DNA_arr[:length]
@@ -265,7 +264,6 @@ def decode_remove_one_separator(DNA_arr, indices):
     encode_length = config.ENCODE_LEN
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
     a_arr = b_arr = c_arr = d_arr = None
-    # 函数实现，从字符串中删除1个分隔符
     if indices[0] != length and indices[0] != length - 1:
         # 删除第一个分隔符
         c_encode_arr = DNA2quaternary_arr(DNA_arr[indices[0] + 1:indices[1]])
@@ -368,7 +366,6 @@ def decode_remove_one_separator(DNA_arr, indices):
 
 
 def decode_remove_zero_separator(DNA_arr, indices):
-    # 函数实现，从字符串中删除0个分隔符
     length = config.SEGMENT_LEN
     encode_length = config.ENCODE_LEN
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1

@@ -41,6 +41,7 @@ def deletion_channel_random(sequences, average_del_cnt):
 
 
 def deletion_channel_at_index(sequences, deleted_indices):
+    deleted_indices = sorted(deleted_indices)
     for i in range(len(sequences)):
         for idx in range(len(deleted_indices)):
             sequences[i] = sequences[i][:deleted_indices[idx] - idx] + sequences[i][deleted_indices[idx] - idx + 1:]

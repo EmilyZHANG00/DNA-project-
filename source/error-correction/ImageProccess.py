@@ -7,6 +7,7 @@ import channel
 from utils import *
 import config
 from DNA_BinaryEncoder import DNA_binary_encode, DNA_binary_decode
+from DNA_QaryEncoder import DNA_qary_encode, DNA_qary_decode
 
 
 def image2array(image_path):
@@ -56,9 +57,15 @@ def extractInformationFromRS(byte_matrix):
     return np.vstack(result)
 
 
-def ImageProcess(filepath):
+def ImageProcess(filepath, type=0):
+    if type not in (0, 1):
+        print("错误的编码类型!")
+        sys.exit()
     # # 获取一维图像数组
-    length = config.SEGMENT_LEN
+    if type == 0:
+        length = config.SEGMENT_LEN
+    else:
+        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
     arr = image2array(filepath)
     if arr is None:
         print("文件路径无效!")
@@ -72,26 +79,29 @@ def ImageProcess(filepath):
     # 转DNA序列
     DNA_matrix = quaternary2DNA_matrix(quaternary_matrix_1)
     # 对DNA序列编码（结果含人工碱基）
-    encode_DNA = DNA_binary_encode(DNA_matrix)
+    if type == 0:
+        encode_DNA = DNA_binary_encode(DNA_matrix)
+    else:
+        encode_DNA = DNA_qary_encode(DNA_matrix)
 
-    deleted_indices = np.array([70, 170])
     # 通过删除信道
     deleted_DNA = channel.deletion_channel_random(encode_DNA, config.DEL_NUM)
-
     # 译码
-    decode_DNA = DNA_binary_decode(deleted_DNA)
-
+    if type == 0:
+        decode_DNA = DNA_binary_decode(deleted_DNA)
+    else:
+        decode_DNA = DNA_qary_decode(deleted_DNA)
+    # print(np.array_equal(decode_DNA, DNA_matrix))
     quaternary_matrix = DNA2quaternary_matrix(decode_DNA)
     # 四进制转数组
 
     byte_matrix = quaternary2byte_matrix(quaternary_matrix)
-
+    shape = [128, 128, 3]
     # rs译码
     try:
         rs_decode = RS_decode(byte_matrix)
     except ReedSolomonError:
         print("rs译码失败！")
-        shape = [128, 128, 3]
         image_matrix = extractInformationFromRS(byte_matrix)
         estimate_arr = merge_segments(image_matrix, length)
         modified_arr = estimate_arr[:np.prod(shape)]  # 因为分段的不能整除，最后一个段补0了
@@ -100,15 +110,14 @@ def ImageProcess(filepath):
         cv2.imshow("test", estimate_image)
         cv2.waitKey(0)
         sys.exit()
+
     # 合并多列
-    shape = [128, 128, 3]
     estimate_arr = merge_segments(rs_decode, length)
     modified_arr = estimate_arr[:np.prod(shape)]  # 因为分段的不能整除，最后一个段补0了
-
     estimate_image = array2image(modified_arr, shape)
     cv2.imshow("test", estimate_image)
     cv2.waitKey(0)
 
 
 # for i in range(10):
-ImageProcess("image.jpeg")
+ImageProcess("image.jpeg", 1)

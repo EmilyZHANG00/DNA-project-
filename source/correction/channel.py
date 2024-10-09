@@ -1,8 +1,5 @@
 import random
 
-import numpy as np
-
-
 def split_integer(sum, n):
     if n <= 0 or sum <= 0:
         raise ValueError("k and n must be positive integers.")

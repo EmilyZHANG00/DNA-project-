@@ -1,8 +1,6 @@
-import binary_VTCode
-import config
-import numpy as np
+from . import binary_VTCode
 import random
-from utils import *
+from .utils import *
 
 
 def VT_decode(d, a):

@@ -1,8 +1,6 @@
-import config
-import numpy as np
 import random
-import diff_VTCode
-from utils import *
+from . import diff_VTCode
+from .utils import *
 from reedsolo import RSCodec
 
 

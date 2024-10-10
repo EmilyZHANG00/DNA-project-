@@ -56,7 +56,6 @@ def testTest_Correction(type=0):
           "并对其DNA进行了解析，这也进一步刷新了DNA分子的保存年代纪录。据悉，DNA至少可保留上百年的数据，相比之下，硬盘、磁带的数据最多只能保留约10年。" \
           "3）DNA存储维护成本低。以DNA形式存储的数据易于维护，和传统的数据中心不同，不需要大量的人力、财力投入，仅需要保存在低温环境中。" \
           "在能耗方面,1GB的数据硬盘存储能耗约为0.04W,而DNA存储的能耗则小于10-10W。"
-
     encode_DNA = text_encode(str, type)
     # 通过删除信道
     deleted_DNA = channel.deletion_channel_random(encode_DNA, config.DEL_NUM)
@@ -66,4 +65,4 @@ def testTest_Correction(type=0):
 
 
 testTest_Correction()
-# imageTest_Correction()
+imageTest_Correction()

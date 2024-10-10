@@ -1,5 +1,4 @@
-# ResConfig.py
-DEL_NUM = 2  # 平均每个序列的删除个数
+DEL_NUM = 1  # 平均每个序列的删除个数
 SEGMENT_LEN = 54
 ENCODE_LEN = 60
 RS_image = 60

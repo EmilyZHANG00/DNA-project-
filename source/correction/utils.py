@@ -1,7 +1,7 @@
 from . import config
 import numpy as np
 import sys
-
+from reedsolo import RSCodec
 
 def byte2binary_matrix(matrix):
     binary_matrix = []
@@ -105,3 +105,26 @@ def merge_segments(matrix, segment_length):
             sys.exit()
         flattened.extend(matrix[i])
     return np.array(flattened)
+
+
+def RS_encode(segments):
+    ecc = RSCodec(config.RS_image)
+    segments_T = segments.T
+    rs_segments_T = []
+    for i in range(len(segments_T)):
+        encode_arr = ecc.encode(bytearray(segments_T[i]))
+        rs_segments_T.append(np.array(encode_arr))
+    return np.array(rs_segments_T).astype(np.uint8).T
+
+
+def RS_decode(matrix):
+    ecc = RSCodec(config.RS_image)
+    matrix_T = matrix.T
+    result_T = []
+    for i in range(len(matrix_T)):
+        decode_arr, _, _ = ecc.decode(bytearray(matrix_T[i]))
+        result_T.append(np.array(decode_arr))
+    return np.array(result_T).astype(np.uint8).T
+
+
+

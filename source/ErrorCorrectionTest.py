@@ -1,8 +1,11 @@
 from correction.ImageProccess import image_decode, image_encode
+from correction.TextProcess import text_encode, text_decode
 import correction.channel as channel
 import correction.config as config
 import cv2
 import sys
+import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def imageTest_Correction(type=0):
@@ -18,8 +21,48 @@ def imageTest_Correction(type=0):
     deleted_DNA = channel.deletion_channel_random(encode_DNA, config.DEL_NUM)
     shape = image.shape
     estimate_image, _ = image_decode(deleted_DNA, shape, type)
-    cv2.imshow("test", estimate_image)
-    cv2.waitKey(0)
+    cv2.imwrite("estimate_image.jpg", estimate_image)
+    difference = cv2.absdiff(image, estimate_image)
+    cv2.imwrite("difference.jpg", difference)
+    show_images()
 
 
-imageTest_Correction()
+def show_images():
+    photo_paths = [
+        "image.jpg",
+        "estimate_image.jpg",
+        "difference.jpg"
+    ]
+
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
+    for i, photo_path in enumerate(photo_paths):
+        image = Image.open(photo_path)
+        axes[i].imshow(image)
+        axes[i].axis('off')
+
+    # 显示整个图形
+    plt.show()
+
+
+def testTest_Correction(type=0):
+    if type not in (0, 1):
+        print("错误的编码类型!")
+        sys.exit()
+    str = "DNA存储与传统的存储介质不同，DNA存储技术有如下显著优势：" \
+          "1)DNA存储密度高。一个DNA分子可以保留一个物种的全部遗传信息，最大的人类染色体含有近2.5亿个碱基对，那么就意味着一条和人手差不多长的DNA链，" \
+          "就可以存储1EB（1EB=10.74亿G）数据。与硬盘和闪存的数据存储密度相比，硬盘存储每立方厘米约为1013位，闪存存储约为1016位，" \
+          "而DNA存储的密度约为1019位。2）DNA分子存储具有稳定性。" \
+          "今年2月，国际顶级学术期刊Nature上的一篇论文称古生物学家在西伯利亚东北部的永久冻土层中提取到距今120万年猛犸象的遗传物质，" \
+          "并对其DNA进行了解析，这也进一步刷新了DNA分子的保存年代纪录。据悉，DNA至少可保留上百年的数据，相比之下，硬盘、磁带的数据最多只能保留约10年。" \
+          "3）DNA存储维护成本低。以DNA形式存储的数据易于维护，和传统的数据中心不同，不需要大量的人力、财力投入，仅需要保存在低温环境中。" \
+          "在能耗方面,1GB的数据硬盘存储能耗约为0.04W,而DNA存储的能耗则小于10-10W。"
+    encode_DNA = text_encode(str, type)
+    # 通过删除信道
+    deleted_DNA = channel.deletion_channel_random(encode_DNA, config.DEL_NUM)
+    arr_length = len(str.encode("utf-8"))
+    estimate_str, _ = text_decode(deleted_DNA, arr_length, type)
+    print(estimate_str)
+
+
+testTest_Correction()
+# imageTest_Correction()

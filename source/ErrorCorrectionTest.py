@@ -5,6 +5,7 @@ import correction.config as config
 import cv2
 import sys
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from PIL import Image
 
 
@@ -20,27 +21,29 @@ def imageTest_Correction(type=0):
     # 通过删除信道
     deleted_DNA = channel.deletion_channel_random(encode_DNA, config.DEL_NUM)
     shape = image.shape
-    estimate_image, _ = image_decode(deleted_DNA, shape, type)
+    estimate_image, flag = image_decode(deleted_DNA, shape, type)
     cv2.imwrite("estimate_image.jpg", estimate_image)
     difference = cv2.absdiff(image, estimate_image)
     cv2.imwrite("difference.jpg", difference)
     show_images()
+    return flag
 
 
 def show_images():
-    photo_paths = [
-        "image.jpg",
-        "estimate_image.jpg",
-        "difference.jpg"
-    ]
-
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
-    for i, photo_path in enumerate(photo_paths):
-        image = Image.open(photo_path)
-        axes[i].imshow(image)
-        axes[i].axis('off')
-
-    # 显示整个图形
+    img1 = mpimg.imread("image.jpg")
+    img2 = mpimg.imread("estimate_image.jpg")
+    img3 = mpimg.imread("difference.jpg")
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+    axs[0].imshow(img1)
+    axs[0].set_title('Input Image')
+    axs[0].axis('off')
+    axs[1].imshow(img2)
+    axs[1].set_title('Output Image')
+    axs[1].axis('off')
+    axs[2].imshow(img3)
+    axs[2].set_title('Difference Image')
+    axs[2].axis('off')
+    plt.tight_layout()
     plt.show()
 
 
@@ -61,8 +64,18 @@ def testTest_Correction(type=0):
     deleted_DNA = channel.deletion_channel_random(encode_DNA, config.DEL_NUM)
     arr_length = len(str.encode("utf-8"))
     estimate_str, _ = text_decode(deleted_DNA, arr_length, type)
+    print(estimate_str==str)
     print(estimate_str)
 
-
-testTest_Correction()
-imageTest_Correction()
+# imageTest_Correction(0)
+testTest_Correction(1)
+# testTest_Correction()
+# success=0
+# fail =0
+# for i in range(9):
+#     flag =imageTest_Correction()
+#     if flag:
+#         success+=1
+#     else:
+#         fail+=1
+# print(success/(success+fail))

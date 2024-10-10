@@ -7,7 +7,8 @@ __pycache__/
 # 
 # Other files and folders
 .settings/
-
+result/
+data/
 # Executables
 *.swf
 *.air

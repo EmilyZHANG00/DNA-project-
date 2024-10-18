@@ -11,44 +11,44 @@ from Config import Dprint,RS_ENCODE_VALID,VIDEO_IMGSIZE_BYTE_CNT,VIDEO_VALID_END
 ImageShape = None
 FrameShape = None
 
-def finddataindex(image_path,chunk_size,segment_len,delimiterChar='M'):
-    # 1 打开图片,转换为字节流
-    with Image.open(image_path) as img:
-        # 将图片转换为字节流
-        img_array = np.array(img)
-        global ImageShape
-        ImageShape = img_array.shape
-        print("encodeFromImage:图片尺寸",img_array.shape)
-    byte_array = img_array.tobytes()
-    print("encodeFromImage : 原图片转换为bytes，字节数目",len(byte_array))
-    # 1.分割成32长的字节串;对第一个字节串和最后一个字节串进行处理，统一长度为57
-    bytes_list = [byte_array[i:i + chunk_size] for i in range(0, len(byte_array), chunk_size)]
-    bytes_list.insert(0, bytes(len(byte_array)))
-
-    bytes_len = len(byte_array)
-    bytes_list[0] = bytes_len.to_bytes(length=chunk_size, byteorder='little', signed=False)
-    bytes_list[-1] = bytes_list[-1] + (' ' * (chunk_size - len(bytes_list[-1]))).encode()
-    data_seq_cnt = len(bytes_list)
-    print("encodeFromBytes:总数据长度为", bytes_len, "共分割为", data_seq_cnt, "个短字节串数组：", "每个长度为",
-          chunk_size)
-    Dprint(bytes_list)
-
-    #bytes_list =bytes_list[0:300]
-    # 2.RS编码
-    RS_bytes_lists = RSencode(bytes_list)
-    print("encodeFromBytes:进行RS编码后数组长度为", len(RS_bytes_lists))
-    Dprint("RS_bytes_lists：", RS_bytes_lists)
-
-    res = []
-    for ebytes in bytes_list:
-        for idx in range(0, len(RS_bytes_lists)):
-            if (ebytes ==  RS_bytes_lists[idx]):
-                if(len(res)>1 and idx!=res[-1]+1):
-                    print(idx)
-                res.append(idx)
-                break
-    print(len(res),res)
-    return res
+# def finddataindex(image_path,chunk_size,segment_len,delimiterChar='M'):
+#     # 1 打开图片,转换为字节流
+#     with Image.open(image_path) as img:
+#         # 将图片转换为字节流
+#         img_array = np.array(img)
+#         global ImageShape
+#         ImageShape = img_array.shape
+#         print("encodeFromImage:图片尺寸",img_array.shape)
+#     byte_array = img_array.tobytes()
+#     print("encodeFromImage : 原图片转换为bytes，字节数目",len(byte_array))
+#     # 1.分割成32长的字节串;对第一个字节串和最后一个字节串进行处理，统一长度为57
+#     bytes_list = [byte_array[i:i + chunk_size] for i in range(0, len(byte_array), chunk_size)]
+#     bytes_list.insert(0, bytes(len(byte_array)))
+#
+#     bytes_len = len(byte_array)
+#     bytes_list[0] = bytes_len.to_bytes(length=chunk_size, byteorder='little', signed=False)
+#     bytes_list[-1] = bytes_list[-1] + (' ' * (chunk_size - len(bytes_list[-1]))).encode()
+#     data_seq_cnt = len(bytes_list)
+#     print("encodeFromBytes:总数据长度为", bytes_len, "共分割为", data_seq_cnt, "个短字节串数组：", "每个长度为",
+#           chunk_size)
+#     Dprint(bytes_list)
+#
+#     #bytes_list =bytes_list[0:300]
+#     # 2.RS编码
+#     RS_bytes_lists = RSencode(bytes_list)
+#     print("encodeFromBytes:进行RS编码后数组长度为", len(RS_bytes_lists))
+#     Dprint("RS_bytes_lists：", RS_bytes_lists)
+#
+#     res = []
+#     for ebytes in bytes_list:
+#         for idx in range(0, len(RS_bytes_lists)):
+#             if (ebytes ==  RS_bytes_lists[idx]):
+#                 if(len(res)>1 and idx!=res[-1]+1):
+#                     print(idx)
+#                 res.append(idx)
+#                 break
+#     print(len(res),res)
+#     return res
 
 def RSencode(origin_bytes_list):
     if(RS_ENCODE_VALID is False):
@@ -193,7 +193,8 @@ def decodeToBytes(RS_ACGT_str_lists,Data_seq_cnt,chunk_size):
         total_len = ImageShape[0] * ImageShape[1] * ImageShape[2]
     elif FrameShape is not None:
         total_len = FrameShape[0] * FrameShape[1] * FrameShape[2]
-    #4.拼接得到原始数据对应的字节串
+
+    # 4. 拼接得到原始数据对应的字节串
     bytes_str = bytearray()
     for i in range(1,len(bytes_list)-1):
         bytes_str += bytes_list[i]
@@ -337,8 +338,6 @@ def encodeFromVedio(video_path,chunk_size,segment_len,delimiterChar='M'):
         # 更新参考帧
         lastframe = frame.astype(np.int8)
 
-        # if(frame_idx>30):
-        #     break
     cap.release()
 
     ACGT_str_lists, date_seq_cnt = encodeFromBytes(bytes_arr,chunk_size,segment_len,delimiterChar)
@@ -356,7 +355,7 @@ def decodeToVedio(output_vedio_path,RS_ACGT_str_lists,Data_seq_cnt,chunk_size, i
     # 将Bytes转换为帧
     # 初始化视频帧的数组
     frames = []
-    frame = np.zeros((ImageShape[0], ImageShape[1], 3), dtype=np.uint8)
+    frame = np.zeros((FrameShape[0], FrameShape[1], 3), dtype=np.uint8)
     # 初始化字节序列的索引
     index = 0
     lastpos = 0
@@ -366,16 +365,16 @@ def decodeToVedio(output_vedio_path,RS_ACGT_str_lists,Data_seq_cnt,chunk_size, i
 
         pos = int.from_bytes(bytes_arr[index:index + VIDEO_IMGSIZE_BYTE_CNT], 'little')
         index += VIDEO_IMGSIZE_BYTE_CNT
-        if(pos<0 or pos >= ImageShape[0] * ImageShape[1]):
+        if(pos<0 or pos >= FrameShape[0] * FrameShape[1]):
             index += 3
             continue
-        if(pos == 0  and lastpos >= ImageShape[0] * ImageShape[1] * VIDEO_VALID_END): # 保存一个帧
+        if(pos == 0  and lastpos >= FrameShape[0] * FrameShape[1] * VIDEO_VALID_END): # 保存一个帧
             frames.append(frame.copy())
         #print(pos,lastpos)
-        pos_x = int(pos / ImageShape[1])
-        pos_y = int(pos % ImageShape[1])
+        pos_x = int(pos / FrameShape[1])
+        pos_y = int(pos % FrameShape[1])
 
-        if(pos_x < ImageShape[0] and pos_y < ImageShape[1]):
+        if(pos_x < FrameShape[0] and pos_y < FrameShape[1]):
         # 读取三个元素的值，每个通道值使用1个字节
             frame[pos_x,pos_y,0] = bytes_arr[index]
             frame[pos_x,pos_y,1] = bytes_arr[index+1]
@@ -386,7 +385,7 @@ def decodeToVedio(output_vedio_path,RS_ACGT_str_lists,Data_seq_cnt,chunk_size, i
     frames.append(frame.copy())
     # 将帧数组转换为视频
     print("重构后帧数目:",len(frames),"开始写入视频......")
-    out = cv2.VideoWriter(output_vedio_path, cv2.VideoWriter_fourcc(*'mp4v'), min(len(frames),30), (ImageShape[1],ImageShape[0]))
+    out = cv2.VideoWriter(output_vedio_path, cv2.VideoWriter_fourcc(*'mp4v'), min(len(frames),30), (FrameShape[1],FrameShape[0]))
     for frame in frames:
         # cv2.imshow('Frame', frame)
         # time.sleep(2)

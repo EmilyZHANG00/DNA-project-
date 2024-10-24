@@ -12,6 +12,7 @@ def split_integer(sum, n):
 
 
 def random_channel_Probabilistic(sequences, lossRateBase):
+    print("开始通过删除信道")
     RemainRate = 1 - lossRateBase
     # 对所有的序列进行随机删除
     original_length = len(sequences[0])
@@ -20,11 +21,12 @@ def random_channel_Probabilistic(sequences, lossRateBase):
         tmp_sequence = sequences[i]
         sequences[i] = ''.join([c for c in tmp_sequence if random.random() <= RemainRate])  # 对每个符号进行随机删除
         del_cnt_list.append(original_length - len(sequences[i]))
-    print("每个序列的删除数目:", del_cnt_list)
-    print("删除数目为2的序列数:", del_cnt_list.count(2))
-    count_greater_than_1 = len([num for num in del_cnt_list if num > 2])  # 统计大于2的元素数量
-    print("删除数目为大于2的序列数:", count_greater_than_1)
+    # print("每个序列的删除数目:", del_cnt_list)
+    # print("删除数目为2的序列数:", del_cnt_list.count(2))
+    # count_greater_than_1 = len([num for num in del_cnt_list if num > 2])  # 统计大于2的元素数量
+    # print("删除数目为大于2的序列数:", count_greater_than_1)
     # 组织成二维列表
+    print("删除信道结束")
     return sequences
 
 

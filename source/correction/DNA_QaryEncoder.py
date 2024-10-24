@@ -5,7 +5,7 @@ from reedsolo import RSCodec
 
 
 def solve_linear_system(a_arr, b_arr, a, b):
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     q = 4
     a_num = diff_VTCode.Syn(diff_VTCode.diff(a_arr), length) % (q * length)
     b_num = diff_VTCode.Syn(diff_VTCode.diff(b_arr), length) % (q * length)
@@ -25,13 +25,12 @@ def DNA_qary_encode(DNA_matrix):
     for i in range(len(DNA_matrix)):
         arr = sub_encode(np.array(list(DNA_matrix[i])))
         result.append("".join(arr))
-        if i % 1000 == 0:
-            print("encoding ", i, "/", len(DNA_matrix))
+        simple_progress_bar(i + 1, len(DNA_matrix), "encode")
     return np.array(result)
 
 
 def sub_encode(DNA_arr):  # 单个DNA序列进行编码（插入人工碱基）实现2删
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     seg_length = config.q_SEGMENT_LEN
     quaternary_arr = DNA2quaternary_arr(DNA_arr)
     separator = np.array([4])
@@ -71,9 +70,8 @@ def DNA_qary_decode(encode_DNA):  # 结果移除人工碱基
             arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))
             error_seq_cnt += 1
         result.append("".join(arr))
-        if i % 1000 == 0:
-            print("decoding ", i, "/", len(encode_DNA))
-    print("译码失败的序列个数：", error_seq_cnt, " 总共的序列个数：", len(encode_DNA))
+        simple_progress_bar(i + 1, len(encode_DNA), "decode")
+    # print("译码失败的序列个数：", error_seq_cnt, " 总共的序列个数：", len(encode_DNA))
     return np.array(result)
 
 

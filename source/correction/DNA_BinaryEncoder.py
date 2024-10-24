@@ -27,8 +27,7 @@ def DNA_binary_encode(DNA_matrix):
     for i in range(len(DNA_matrix)):
         arr = sub_encode(np.array(list(DNA_matrix[i])))
         result.append("".join(arr))
-        if i % 1000 == 0:
-            print("encoding ", i, "/", len(DNA_matrix))
+        simple_progress_bar(i + 1, len(DNA_matrix), "encode")
     return np.array(result)
 
 
@@ -71,8 +70,7 @@ def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
         else:  # 多删
             arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))
         result.append("".join(arr))
-        if i % 1000 == 0:
-            print("decoding ", i, "/", len(encode_DNA))
+        simple_progress_bar(i + 1, len(encode_DNA), "decode")
     return np.array(result)
 
 

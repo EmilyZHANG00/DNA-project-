@@ -4,7 +4,7 @@ BASE_LOSS_RATE  = 0.005    # 碱基丢失率
 # RS编码
 RS_image = 60
 RS_text = 60
-RS_video= 40
+RS_video= 60
 RS_SIZE = 255
 
 # 二元

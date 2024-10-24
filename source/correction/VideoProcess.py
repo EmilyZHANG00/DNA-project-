@@ -32,13 +32,12 @@ def video_encode(cap, type=0):
                         x == diff.shape[1] - 1 and y == diff.shape[0] - 1):
                     # 位置用3个字节表示（假设视频帧大小不超过1G像素）
                     pos = y * frame.shape[1] + x
-                    bytes_arr.extend(pos.to_bytes(config.VIDEO_IMGSIZE_BYTE_CNT, 'little'))  # 位置
+                    bytes_arr.extend(pos.to_bytes(Config.VIDEO_IMGSIZE_BYTE_CNT, 'little'))  # 位置
                     bytes_arr.append(frame[y, x, 0])
                     bytes_arr.append(frame[y, x, 1])
                     bytes_arr.append(frame[y, x, 2])
                     points_cnt += 1
-        if (frame_idx % 10 == 0):
-            print("encoding ", frame_idx, "/", total_frames, "size:", frame.shape, points_cnt, "......")
+        simple_progress_bar(frame_idx,total_frames,"prepare_frames")
         # 更新参考帧
         lastframe = frame.astype(np.int8)
         # 读取下一帧
@@ -48,17 +47,17 @@ def video_encode(cap, type=0):
     cap.release()
 
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
     date_seq_cnt = len(bytes_arr)
     arr_segments = split_segments(bytes_arr, length)
-    print("分段成功")
+    # print("分段成功")
     # rs编码（n+k段）
     rs_segments = RS_encode(arr_segments, config.RS_video)
-    print("RS成功")
+    # print("RS成功")
     DNA_matrix = byte2DNA_arr(rs_segments)
-    print("转DNA成功")
+    # print("转DNA成功")
     if type == 0:
         encode_DNA = DNA_binary_encode(DNA_matrix)
     else:

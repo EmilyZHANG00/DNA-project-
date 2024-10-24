@@ -6,13 +6,13 @@ from .DNA_QaryEncoder import DNA_qary_encode, DNA_qary_decode
 
 def text_encode(original_text, type=0):
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
         length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
     utf8_bytes = bytearray(original_text.encode('utf-8'))
     date_seq_cnt = len(utf8_bytes)
 
-    print("1 编码为字节串内容:", len(utf8_bytes), utf8_bytes)
+    # print("1 编码为字节串内容:", len(utf8_bytes), utf8_bytes)
     arr_segments = split_segments(utf8_bytes, length)
     rs_segments = RS_encode(arr_segments, config.RS_text)
     DNA_matrix = byte2DNA_arr(rs_segments)

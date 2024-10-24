@@ -11,9 +11,9 @@ def array2image(flattened_array, original_shape):  # 通过imshow函数展示照
 
 def image_encode(image_numpy, type=0):
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     arr = image_numpy.ravel()
     if arr is None:
         print("文件路径无效!")

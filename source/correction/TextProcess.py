@@ -10,18 +10,18 @@ def text_encode(original_text, type=0):
     else:
         length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
     utf8_bytes = bytearray(original_text.encode('utf-8'))
+    date_seq_cnt = len(utf8_bytes)
+
     print("1 编码为字节串内容:", len(utf8_bytes), utf8_bytes)
     arr_segments = split_segments(utf8_bytes, length)
-    rs_segments = RS_encode(arr_segments)
-    quaternary_matrix_1 = byte2quaternary_matrix(rs_segments)
-    # 转DNA序列
-    DNA_matrix = quaternary2DNA_matrix(quaternary_matrix_1)
+    rs_segments = RS_encode(arr_segments, config.RS_text)
+    DNA_matrix = byte2DNA_arr(rs_segments)
     # 对DNA序列编码（结果含人工碱基）
     if type == 0:
         encode_DNA = DNA_binary_encode(DNA_matrix)
     else:
         encode_DNA = DNA_qary_encode(DNA_matrix)
-    return encode_DNA
+    return encode_DNA, date_seq_cnt
 
 
 def text_decode(deleted_DNA, arr_length, type=0):
@@ -33,12 +33,9 @@ def text_decode(deleted_DNA, arr_length, type=0):
         decode_DNA = DNA_binary_decode(deleted_DNA)
     else:
         decode_DNA = DNA_qary_decode(deleted_DNA)
-    quaternary_matrix = DNA2quaternary_matrix(decode_DNA)
-    # 四进制转数组
-    byte_matrix = quaternary2byte_matrix(quaternary_matrix)
-    # rs译码
+    byte_matrix = DNA2byte_arr(decode_DNA)
     try:
-        text_matrix = RS_decode(byte_matrix)
+        text_matrix = RS_decode(byte_matrix, config.RS_text)
         flag = True
     except ReedSolomonError:
         print("rs译码失败！")

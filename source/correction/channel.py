@@ -1,5 +1,6 @@
 import random
 
+
 def split_integer(sum, n):
     if n <= 0 or sum <= 0:
         raise ValueError("k and n must be positive integers.")
@@ -10,13 +11,20 @@ def split_integer(sum, n):
     return parts
 
 
-def deletion_channel_random_with_pro(sequences, error_probabilities=[0.09, 0.9, 0.01, 0]):
-    for i in range(len(sequences)):
-        num_errors = random.choices([0, 1, 2, 3], weights=error_probabilities)[0]
-        error_indices = sorted(random.sample(range(len(sequences[i])), num_errors), reverse=True)
-        for idx in range(len(error_indices)):
-            sequences[i] = sequences[i][:idx] + sequences[i][idx + 1:]
-
+def random_channel_Probabilistic(sequences, lossRateBase):
+    RemainRate = 1 - lossRateBase
+    # 对所有的序列进行随机删除
+    original_length = len(sequences[0])
+    del_cnt_list = []
+    for i in range(0, len(sequences)):
+        tmp_sequence = sequences[i]
+        sequences[i] = ''.join([c for c in tmp_sequence if random.random() <= RemainRate])  # 对每个符号进行随机删除
+        del_cnt_list.append(original_length - len(sequences[i]))
+    print("每个序列的删除数目:", del_cnt_list)
+    print("删除数目为2的序列数:", del_cnt_list.count(2))
+    count_greater_than_1 = len([num for num in del_cnt_list if num > 2])  # 统计大于2的元素数量
+    print("删除数目为大于2的序列数:", count_greater_than_1)
+    # 组织成二维列表
     return sequences
 
 

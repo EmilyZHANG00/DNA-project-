@@ -1,8 +1,8 @@
 
 
 CLUSTER_LOSS_RATE = 0.001   # 簇丢失率
-BASE_LOSS_RATE  = 0.01    # 碱基丢失率
-CLUSTER_SIZE = 10         # 每个簇的平均大小
+BASE_LOSS_RATE  = 0.02    # 碱基丢失率
+CLUSTER_SIZE = 20         # 每个簇的平均大小
 
 
 # RS码
@@ -16,7 +16,6 @@ CHUNK_SIZE = SEGMENT_LEN       # 一个序列中每个段的长度大小（单�
 delimiterChar = 'M'
 DEBUG = False
 ImageShape = (1,1,1)
-
 
 
 #VT编码部分

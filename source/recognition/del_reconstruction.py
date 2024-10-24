@@ -30,17 +30,35 @@ def segmentation(cluster,TargetLen,delimiter='M'):
 def fullspaceReconstruction(cluster,Target_LEN):
     # 去重
     cluster = list(set(cluster))
-    success = False;
 
-    valid_cnt = 0
+    DEL_1_SEQS = []
     for idx in range(0,len(cluster)):
         seq=cluster[idx]
         if(len(seq) == Target_LEN):
             return seq,True
         if(len(seq) >= Target_LEN-1):
-            valid_cnt += 1
+            DEL_1_SEQS.append(seq)
         seq+= 'A'*(Target_LEN-len(seq))
         cluster[idx]=seq
+
+    res=""
+    if(len(DEL_1_SEQS)>=3):
+        for idx in range(0,Target_LEN-1):
+            if(DEL_1_SEQS[0][idx] == DEL_1_SEQS[1][idx] and  DEL_1_SEQS[1][idx] ==  DEL_1_SEQS[2][idx]):
+                res+=DEL_1_SEQS[0][idx]
+            elif(DEL_1_SEQS[0][idx] == DEL_1_SEQS[1][idx]):
+                res += DEL_1_SEQS[0][idx]
+                res += DEL_1_SEQS[2][idx:]
+                return res, True;
+            elif (DEL_1_SEQS[0][idx] == DEL_1_SEQS[2][idx]):
+                res += DEL_1_SEQS[0][idx]
+                res += DEL_1_SEQS[1][idx:]
+                return res, True;
+            elif (DEL_1_SEQS[1][idx] == DEL_1_SEQS[2][idx]):
+                res += DEL_1_SEQS[1][idx]
+                res += DEL_1_SEQS[0][idx:]
+                return res, True;
+
     char_count = defaultdict(lambda: defaultdict(int))
     for seq in cluster:
         # 遍历字符串的每个字符及其索引
@@ -60,7 +78,7 @@ def fullspaceReconstruction(cluster,Target_LEN):
     except ValueError as e:
         print("Error", e)
         return -1
-    return most_frequent_str,success
+    return most_frequent_str,False
 
 
 # 真正实现从一个簇中重构出一个序列，这里序列为碱基序列，重构后长度应该为63

@@ -19,14 +19,12 @@ origin_text = "DNA存储与传统的存储介质不同，DNA存储技术有如�
             "3）DNA存储维护成本低。以DNA形式存储的数据易于维护，和传统的数据中心不同，不需要大量的人力、财力投入，仅需要保存在低温环境中。" \
             "在能耗方面,1GB的数据硬盘存储能耗约为0.04W,而DNA存储的能耗则小于10-10W。"
 
-image_path = '../data/testB.jpg'  # 替换为你的图片路径
+image_path = '../data/testA.jpg'  # 替换为你的图片路径
 output_path = '../data/output_image.jpg'  # 替换为输出图片的路径
-diff_image_dir = '../result/testB/10-16-01'  # 替换为差异图片的保存路径
-
+diff_image_dir = '../result/testA/10-25-01'  # 替换为差异图片的保存路径
 
 video_path = '../data/test3.mp4'
-video_output_path = '../result/output_video.mp4'
-output_video_dir = '../result/10-17-01'
+output_video_dir = '../result/Video/10-25-01'
 # VTCode作为参数，记录是否进行VT编码
 def textTest_Reconstruction(Artificial=True,VTCodeEncode=False):
     total_length = CHUNK_SIZE * 4    # 无论是否进行分段orVT编码，并不影响最终序列重构结果的对应长度
@@ -128,8 +126,6 @@ def imageTest_Reconstruction(Artificial=True,VTCodeEncode=False):
 
 
 
-
-
 def videoTest_Reconstruction(Artificial=True,VTCodeEncode=False):
     print(" \n ======================  NewTest  ===================== ")
     total_length = CHUNK_SIZE *4    # 无论是否进行分段orVT编码，并不影响最终序列重构结果的对应长度
@@ -192,17 +188,15 @@ def videoTest_Reconstruction(Artificial=True,VTCodeEncode=False):
 
 
 
-# textTest_Reconstruction(False)     # 不加分隔符
-# textTest_Reconstruction(True,False)      # 加人工碱基作为分隔符，全空间
-# textTest_Reconstruction(True,True)      # 人工碱基 + VT码
+textTest_Reconstruction(False)     # 不加分隔符
+textTest_Reconstruction(True,False)      # 加人工碱基作为分隔符，全空间
+textTest_Reconstruction(True,True)      # 人工碱基 + VT码
 
 
-# imageTest_Reconstruction(False)     # 不加分隔符
-# imageTest_Reconstruction(True,False)      # 加人工碱基作为分隔符，全空间
-# imageTest_Reconstruction(True,True)      # 人工碱基 + VT码
+imageTest_Reconstruction(False)     # 不加分隔符
+imageTest_Reconstruction(True,False)      # 加人工碱基作为分隔符，全空间
+imageTest_Reconstruction(True,True)      # 人工碱基 + VT码
 
-
-#
 videoTest_Reconstruction(False)
 videoTest_Reconstruction(True,False)
 videoTest_Reconstruction(True,True)

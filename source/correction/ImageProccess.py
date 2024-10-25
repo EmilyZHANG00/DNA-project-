@@ -22,7 +22,7 @@ def image_encode(image_numpy, type=0):
     # 分段（n段）
     arr_segments = split_segments(arr, length)
     # rs编码（n+k段）
-    rs_segments = RS_encode(arr_segments, config.RS_image)
+    rs_segments = RS_encode(arr_segments, Config.RS_image)
     # 数组转四进制
     DNA_matrix = byte2DNA_arr(rs_segments)
     if type == 0:
@@ -34,16 +34,16 @@ def image_encode(image_numpy, type=0):
 
 def image_decode(deleted_DNA, shape, type=0):
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     if type == 0:
         decode_DNA = DNA_binary_decode(deleted_DNA)
     else:
         decode_DNA = DNA_qary_decode(deleted_DNA)
     byte_matrix = DNA2byte_arr(decode_DNA)
     try:
-        image_matrix = RS_decode(byte_matrix, config.RS_image)
+        image_matrix = RS_decode(byte_matrix, Config.RS_image)
         flag = True
     except ReedSolomonError:
         print("rs译码失败！")
@@ -57,14 +57,14 @@ def image_decode(deleted_DNA, shape, type=0):
 
 
 def extractInformationFromRS(byte_matrix):
-    chunk_size = config.RS_SIZE
+    chunk_size = Config.RS_SIZE
     num_chunks = len(byte_matrix) // chunk_size
     result = []
     for i in range(num_chunks):
         start_row = i * chunk_size
         end_row = start_row + chunk_size
-        result.append(byte_matrix[start_row:end_row - config.RS_image])
+        result.append(byte_matrix[start_row:end_row - Config.RS_image])
     if len(byte_matrix) % chunk_size != 0:
         remaining_rows = byte_matrix[num_chunks * chunk_size:]
-        result.append(remaining_rows[:-config.RS_image])
+        result.append(remaining_rows[:-Config.RS_image])
     return np.vstack(result)

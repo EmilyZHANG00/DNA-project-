@@ -3,18 +3,18 @@ from .utils import *
 from .DNA_BinaryEncoder import DNA_binary_encode, DNA_binary_decode
 from .DNA_QaryEncoder import DNA_qary_encode, DNA_qary_decode
 
-
+from . import Config
 def text_encode(original_text, type=0):
     if type == 0:
         length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     utf8_bytes = bytearray(original_text.encode('utf-8'))
     date_seq_cnt = len(utf8_bytes)
 
     # print("1 编码为字节串内容:", len(utf8_bytes), utf8_bytes)
     arr_segments = split_segments(utf8_bytes, length)
-    rs_segments = RS_encode(arr_segments, config.RS_text)
+    rs_segments = RS_encode(arr_segments, Config.RS_text)
     DNA_matrix = byte2DNA_arr(rs_segments)
     # 对DNA序列编码（结果含人工碱基）
     if type == 0:
@@ -26,16 +26,16 @@ def text_encode(original_text, type=0):
 
 def text_decode(deleted_DNA, arr_length, type=0):
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     if type == 0:
         decode_DNA = DNA_binary_decode(deleted_DNA)
     else:
         decode_DNA = DNA_qary_decode(deleted_DNA)
     byte_matrix = DNA2byte_arr(decode_DNA)
     try:
-        text_matrix = RS_decode(byte_matrix, config.RS_text)
+        text_matrix = RS_decode(byte_matrix, Config.RS_text)
         flag = True
     except ReedSolomonError:
         print("rs译码失败！")
@@ -49,14 +49,14 @@ def text_decode(deleted_DNA, arr_length, type=0):
 
 
 def extractInformationFromRS(byte_matrix):
-    chunk_size = config.RS_SIZE
+    chunk_size = Config.RS_SIZE
     num_chunks = len(byte_matrix) // chunk_size
     result = []
     for i in range(num_chunks):
         start_row = i * chunk_size
         end_row = start_row + chunk_size
-        result.append(byte_matrix[start_row:end_row - config.RS_text])
+        result.append(byte_matrix[start_row:end_row - Config.RS_text])
     if len(byte_matrix) % chunk_size != 0:
         remaining_rows = byte_matrix[num_chunks * chunk_size:]
-        result.append(remaining_rows[:-config.RS_text])
+        result.append(remaining_rows[:-Config.RS_text])
     return np.vstack(result)

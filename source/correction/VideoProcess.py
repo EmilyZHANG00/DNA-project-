@@ -49,12 +49,12 @@ def video_encode(cap, type=0):
     if type == 0:
         length = Config.SEGMENT_LEN
     else:
-        length = (Config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     date_seq_cnt = len(bytes_arr)
     arr_segments = split_segments(bytes_arr, length)
     # print("分段成功")
     # rs编码（n+k段）
-    rs_segments = RS_encode(arr_segments, config.RS_video)
+    rs_segments = RS_encode(arr_segments, Config.RS_video)
     # print("RS成功")
     DNA_matrix = byte2DNA_arr(rs_segments)
     # print("转DNA成功")
@@ -67,9 +67,9 @@ def video_encode(cap, type=0):
 
 def video_decode(deleted_DNA, n, frame_shape, type=0):
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     if type == 0:
         decode_DNA = DNA_binary_decode(deleted_DNA)
     else:
@@ -77,7 +77,7 @@ def video_decode(deleted_DNA, n, frame_shape, type=0):
     byte_matrix = DNA2byte_arr(decode_DNA)
     # rs译码
     try:
-        video_matrix = RS_decode(byte_matrix, config.RS_video)
+        video_matrix = RS_decode(byte_matrix, Config.RS_video)
         flag = True
     except ReedSolomonError:
         print("rs译码失败！")
@@ -87,8 +87,8 @@ def video_decode(deleted_DNA, n, frame_shape, type=0):
     estimate_arr = merge_segments(video_matrix, length)
     bytes_arr = estimate_arr[:n]  # 因为分段的不能整除，最后一个段补0了
 
-    VIDEO_IMGSIZE_BYTE_CNT = config.VIDEO_IMGSIZE_BYTE_CNT
-    VIDEO_VALID_END = config.VIDEO_VALID_END
+    VIDEO_IMGSIZE_BYTE_CNT = Config.VIDEO_IMGSIZE_BYTE_CNT
+    VIDEO_VALID_END = Config.VIDEO_VALID_END
     frames = []
     frame = np.zeros((frame_shape[0], frame_shape[1], 3), dtype=np.uint8)
     # 初始化字节序列的索引
@@ -120,14 +120,14 @@ def video_decode(deleted_DNA, n, frame_shape, type=0):
 
 
 def extractInformationFromRS(byte_matrix):
-    chunk_size = config.RS_SIZE
+    chunk_size = Config.RS_SIZE
     num_chunks = len(byte_matrix) // chunk_size
     result = []
     for i in range(num_chunks):
         start_row = i * chunk_size
         end_row = start_row + chunk_size
-        result.append(byte_matrix[start_row:end_row - config.RS_video])
+        result.append(byte_matrix[start_row:end_row - Config.RS_video])
     if len(byte_matrix) % chunk_size != 0:
         remaining_rows = byte_matrix[num_chunks * chunk_size:]
-        result.append(remaining_rows[:-config.RS_video])
+        result.append(remaining_rows[:-Config.RS_video])
     return np.vstack(result)

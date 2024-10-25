@@ -4,7 +4,7 @@ from .utils import *
 
 
 def VT_decode(d, a):
-    modulo = config.BINARY_MODULO
+    modulo = Config.BINARY_MODULO
     n = len(d) + 1
     ones_indices = np.where(d == 1)[0] + 1
     zero_indices = np.where(d == 0)[0] + 1
@@ -32,7 +32,7 @@ def DNA_binary_encode(DNA_matrix):
 
 
 def sub_encode(DNA_arr):  # 单个DNA序列进行编码（插入人工碱基）实现2删
-    length = config.SEGMENT_LEN
+    length = Config.SEGMENT_LEN
     quaternary_arr = DNA2quaternary_arr(DNA_arr)
     separator = np.array([4])
 
@@ -57,8 +57,8 @@ def sub_encode(DNA_arr):  # 单个DNA序列进行编码（插入人工碱基）�
 
 def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
     result = []
-    length = config.SEGMENT_LEN
-    encode_length = config.ENCODE_LEN
+    length = Config.SEGMENT_LEN
+    encode_length = Config.ENCODE_LEN
     total_length = (length + encode_length) * 2 + 3
     for i in range(len(encode_DNA)):
         if len(encode_DNA[i]) == total_length:
@@ -75,10 +75,10 @@ def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
 
 
 def decode_from_multi_deletions(DNA_arr):  # 处理多删
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
     DNA_arr = DNA2quaternary_arr(DNA_arr)
-    length = config.SEGMENT_LEN
-    encode_length = config.ENCODE_LEN
+    length = Config.SEGMENT_LEN
+    encode_length = Config.ENCODE_LEN
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
     if len(indices) == 3:
         a_arr = DNA_arr[:indices[0]]
@@ -166,7 +166,7 @@ def decode_from_multi_deletions(DNA_arr):  # 处理多删
 
 
 def decode_from_no_deletion(DNA_arr):
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
 
     a_arr = DNA_arr[:indices[0]]
@@ -183,9 +183,9 @@ def decode_from_no_deletion(DNA_arr):
 
 
 def decode_from_one_deletion(DNA_arr):
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
-    length = config.SEGMENT_LEN
-    encode_length = config.ENCODE_LEN
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
+    length = Config.SEGMENT_LEN
+    encode_length = Config.ENCODE_LEN
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
 
     if len(indices) == 3:
@@ -247,7 +247,7 @@ def decode_from_one_deletion(DNA_arr):
 
 def decode_from_two_deletions(DNA_arr):  # 参数带人工碱基
     # 找到分隔符的位置
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
     # 根据分隔符判断错误类型
     if len(indices) == 1:
         result = decode_remove_two_separators(DNA_arr, indices)
@@ -285,7 +285,7 @@ def solve_linear_congruence(A, B):  # 解带余二元一次方程组
     b2 = A[1][1]
     c1 = B[0]
     c2 = B[1]
-    p = config.BINARY_MODULO
+    p = Config.BINARY_MODULO
     inv_a1 = mod_inverse(a1, p)
     inv_a2 = mod_inverse(a2, p)
     # 从第一个方程解出 x
@@ -302,9 +302,9 @@ def solve_linear_congruence(A, B):  # 解带余二元一次方程组
 
 
 def solve_linear_system(a_arr, b_arr, a, b, c, d):
-    Belta = config.Belta
-    Gamma = config.Gamma
-    modulo = config.BINARY_MODULO
+    Belta = Config.Belta
+    Gamma = Config.Gamma
+    modulo = Config.BINARY_MODULO
     indices = np.where((a_arr & 1) == 1)[0] + 1
     low_a = np.sum(indices) % modulo
     indices = np.where(((a_arr >> 1) & 1) == 1)[0] + 1
@@ -325,8 +325,8 @@ def solve_linear_system(a_arr, b_arr, a, b, c, d):
 
 
 def decode_remove_two_separators(DNA_arr, indices):
-    length = config.SEGMENT_LEN
-    encode_length = config.ENCODE_LEN
+    length = Config.SEGMENT_LEN
+    encode_length = Config.ENCODE_LEN
     a_arr = DNA_arr[:length]
     b_arr = c_encode_arr = d_encode_arr = None
     if indices[0] == length:
@@ -351,8 +351,8 @@ def decode_remove_two_separators(DNA_arr, indices):
 
 
 def decode_remove_one_separator(DNA_arr, indices):
-    length = config.SEGMENT_LEN
-    encode_length = config.ENCODE_LEN
+    length = Config.SEGMENT_LEN
+    encode_length = Config.ENCODE_LEN
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
     a_arr = b_arr = c_arr = d_arr = None
     if indices[0] != length and indices[0] != length - 1:
@@ -457,8 +457,8 @@ def decode_remove_one_separator(DNA_arr, indices):
 
 
 def decode_remove_zero_separator(DNA_arr, indices):
-    length = config.SEGMENT_LEN
-    encode_length = config.ENCODE_LEN
+    length = Config.SEGMENT_LEN
+    encode_length = Config.ENCODE_LEN
     deleted_indices = np.array([1, 2, 4, 8, 16, 32]) - 1
     a_arr = DNA2quaternary_arr(DNA_arr[:indices[0]])
     b_arr = DNA2quaternary_arr(DNA_arr[indices[0] + 1:indices[1]])

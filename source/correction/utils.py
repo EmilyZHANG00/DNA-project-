@@ -62,7 +62,7 @@ def quaternary2byte_matrix(byte_matrix):
 
 def quaternary2DNA_matrix(quaternary_segments):  # 矩阵
     DNA_segments = []
-    mapping = {0: 'A', 1: 'C', 2: 'G', 3: 'T', 4: config.delimiterChar}
+    mapping = {0: 'A', 1: 'C', 2: 'G', 3: 'T', 4: Config.delimiterChar}
     for i in range(len(quaternary_segments)):
         segment_list = [mapping[num] for num in quaternary_segments[i]]
         DNA_segments.append("".join(segment_list))
@@ -71,7 +71,7 @@ def quaternary2DNA_matrix(quaternary_segments):  # 矩阵
 
 def DNA2quaternary_matrix(DNA_segments):  # 矩阵
     quaternary_segments = []
-    mapping = {'A': 0, 'C': 1, 'G': 2, 'T': 3, config.delimiterChar: 4}
+    mapping = {'A': 0, 'C': 1, 'G': 2, 'T': 3, Config.delimiterChar: 4}
     for i in range(len(DNA_segments)):
         DNA_arr = np.array(list(DNA_segments[i]))
         segment_list = [mapping[base] for base in DNA_arr]
@@ -80,7 +80,7 @@ def DNA2quaternary_matrix(DNA_segments):  # 矩阵
 
 
 def quaternary2DNA_arr(quaternary_arr):
-    mapping = {0: 'A', 1: 'C', 2: 'G', 3: 'T', 4: config.delimiterChar}
+    mapping = {0: 'A', 1: 'C', 2: 'G', 3: 'T', 4: Config.delimiterChar}
     segment_list = [mapping[num] for num in quaternary_arr]
     return np.array(segment_list)
 
@@ -110,7 +110,7 @@ def DNA2byte_arr(DNA_arr):
 
 
 def DNA2quaternary_arr(DNA_array):
-    mapping = {'A': 0, 'C': 1, 'G': 2, 'T': 3, config.delimiterChar: 4}
+    mapping = {'A': 0, 'C': 1, 'G': 2, 'T': 3, Config.delimiterChar: 4}
     segment_list = [mapping[base] for base in DNA_array]
     return np.array(segment_list)
 

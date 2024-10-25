@@ -31,7 +31,7 @@ def DNA_qary_encode(DNA_matrix):
 
 def sub_encode(DNA_arr):  # 单个DNA序列进行编码（插入人工碱基）实现2删
     length = Config.q_ENCODE_LEN
-    seg_length = config.q_SEGMENT_LEN
+    seg_length = Config.q_SEGMENT_LEN
     quaternary_arr = DNA2quaternary_arr(DNA_arr)
     separator = np.array([4])
 
@@ -53,8 +53,8 @@ def sub_encode(DNA_arr):  # 单个DNA序列进行编码（插入人工碱基）�
 
 def DNA_qary_decode(encode_DNA):  # 结果移除人工碱基
     result = []
-    length = config.q_ENCODE_LEN
-    seg_length = config.q_SEGMENT_LEN
+    length = Config.q_ENCODE_LEN
+    seg_length = Config.q_SEGMENT_LEN
     total_length = length * 4 + 3
     error_seq_cnt = 0
     for i in range(len(encode_DNA)):
@@ -76,9 +76,9 @@ def DNA_qary_decode(encode_DNA):  # 结果移除人工碱基
 
 
 def decode_from_multi_deletions(DNA_arr):  # 处理多删
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
     DNA_arr = DNA2quaternary_arr(DNA_arr)
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     deleted_indices = deleted_indices = np.array([1, 4, 16, 64]) - 1
     if len(indices) == 3:
         a_arr = DNA_arr[:indices[0]]
@@ -168,7 +168,7 @@ def decode_from_multi_deletions(DNA_arr):  # 处理多删
 
 
 def decode_from_no_deletion(DNA_arr):
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
     deleted_indices = np.array([1, 4, 16, 64]) - 1
 
     a_arr = DNA2quaternary_arr(DNA_arr[:indices[0]])
@@ -185,8 +185,8 @@ def decode_from_no_deletion(DNA_arr):
 
 
 def decode_from_one_deletion(DNA_arr):
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
-    length = config.q_ENCODE_LEN
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
+    length = Config.q_ENCODE_LEN
     deleted_indices = np.array([1, 4, 16, 64]) - 1
 
     if len(indices) == 3:  # 非分隔符发生错误
@@ -240,7 +240,7 @@ def decode_from_one_deletion(DNA_arr):
 
 def decode_from_two_deletions(DNA_arr):  # 参数带人工碱基
     # 找到分隔符的位置
-    indices = np.where(DNA_arr == config.delimiterChar)[0]
+    indices = np.where(DNA_arr == Config.delimiterChar)[0]
     # 根据分隔符判断错误类型
     if len(indices) == 1:
         result, flag = decode_remove_two_separators(DNA_arr, indices)
@@ -252,7 +252,7 @@ def decode_from_two_deletions(DNA_arr):  # 参数带人工碱基
 
 
 def decode_remove_two_separators(DNA_arr, indices):
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     a_arr = DNA_arr[:length]
     b_arr = c_encode_arr = d_encode_arr = None
     if indices[0] == length:  # 保留第一个分隔符
@@ -276,7 +276,7 @@ def decode_remove_two_separators(DNA_arr, indices):
 
 
 def decode_remove_one_separator(DNA_arr, indices):
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     deleted_indices = np.array([1, 4, 16, 64]) - 1
 
     if indices[0] != length and indices[0] != length - 1:  # 删除第一个分隔符
@@ -352,7 +352,7 @@ def decode_remove_one_separator(DNA_arr, indices):
 
 
 def decode_remove_zero_separator(DNA_arr, indices):
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     deleted_indices = np.array([1, 4, 16, 64]) - 1
     a_arr = DNA2quaternary_arr(DNA_arr[:indices[0]])
     b_arr = DNA2quaternary_arr(DNA_arr[indices[0] + 1:indices[1]])

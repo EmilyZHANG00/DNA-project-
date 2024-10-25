@@ -1,7 +1,8 @@
-from . import config
+from . import Config
 import numpy as np
 import sys
 from reedsolo import RSCodec
+
 
 def byte2binary_matrix(matrix):
     binary_matrix = []
@@ -84,6 +85,30 @@ def quaternary2DNA_arr(quaternary_arr):
     return np.array(segment_list)
 
 
+def byte2DNA_arr(byte_arr):
+    conversion = {'00': 'A', '01': 'C', '10': 'G', '11': 'T'}
+    ACGT_str_lists = []
+    for bytestr in byte_arr:
+        binstr = ''.join(format(byte, '08b') for byte in bytestr)
+        ACGT_str = ''
+        for i in range(0, len(binstr), 2):
+            ACGT_str += conversion[binstr[i:i + 2]]
+        ACGT_str_lists.append(ACGT_str)
+    return np.array(ACGT_str_lists)
+
+
+def DNA2byte_arr(DNA_arr):
+    conversion = {'A': '00', 'C': '01', 'G': '10', 'T': '11'}
+    bytes_lines = []
+    for str in DNA_arr:
+        bin_str = ''
+        for ch in str:
+            bin_str += conversion[ch]
+        bytes_from_bin = [int(bin_str[i:i + 8], 2) for i in range(0, len(bin_str), 8)]
+        bytes_lines.append(np.array(bytes_from_bin).astype(np.uint8))
+    return np.array(bytes_lines)
+
+
 def DNA2quaternary_arr(DNA_array):
     mapping = {'A': 0, 'C': 1, 'G': 2, 'T': 3, config.delimiterChar: 4}
     segment_list = [mapping[base] for base in DNA_array]
@@ -107,8 +132,8 @@ def merge_segments(matrix, segment_length):
     return np.array(flattened)
 
 
-def RS_encode(segments):
-    ecc = RSCodec(config.RS_image)
+def RS_encode(segments, param):
+    ecc = RSCodec(param)
     segments_T = segments.T
     rs_segments_T = []
     for i in range(len(segments_T)):
@@ -117,8 +142,8 @@ def RS_encode(segments):
     return np.array(rs_segments_T).astype(np.uint8).T
 
 
-def RS_decode(matrix):
-    ecc = RSCodec(config.RS_image)
+def RS_decode(matrix, param):
+    ecc = RSCodec(param)
     matrix_T = matrix.T
     result_T = []
     for i in range(len(matrix_T)):
@@ -127,4 +152,19 @@ def RS_decode(matrix):
     return np.array(result_T).astype(np.uint8).T
 
 
+def simple_progress_bar(current, total, desc, bar_length=40, ):
+    """
+    简单的进度条函数
+    :param current: 当前的进度
+    :param total: 总进度
+    :param bar_length: 进度条的长度
+    """
+    percent = ("{0:.1f}").format(100 * (current / float(total)))
+    filled_length = int(round(bar_length * current) / total)
+    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+    sys.stdout.write(f'\r|{bar}| {percent}% ' + desc)
+    sys.stdout.flush()
 
+    # 打印换行，表示进度条结束
+    if current == total:
+        print()

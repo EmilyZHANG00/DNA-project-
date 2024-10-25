@@ -4,7 +4,7 @@ from .utils import *
 
 
 def VT_decode(d, a):
-    modulo = config.binary_modulo
+    modulo = config.BINARY_MODULO
     n = len(d) + 1
     ones_indices = np.where(d == 1)[0] + 1
     zero_indices = np.where(d == 0)[0] + 1
@@ -27,6 +27,7 @@ def DNA_binary_encode(DNA_matrix):
     for i in range(len(DNA_matrix)):
         arr = sub_encode(np.array(list(DNA_matrix[i])))
         result.append("".join(arr))
+        simple_progress_bar(i + 1, len(DNA_matrix), "encode")
     return np.array(result)
 
 
@@ -69,6 +70,7 @@ def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
         else:  # 多删
             arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))
         result.append("".join(arr))
+        simple_progress_bar(i + 1, len(encode_DNA), "decode")
     return np.array(result)
 
 
@@ -283,7 +285,7 @@ def solve_linear_congruence(A, B):  # 解带余二元一次方程组
     b2 = A[1][1]
     c1 = B[0]
     c2 = B[1]
-    p = config.binary_modulo
+    p = config.BINARY_MODULO
     inv_a1 = mod_inverse(a1, p)
     inv_a2 = mod_inverse(a2, p)
     # 从第一个方程解出 x
@@ -302,7 +304,7 @@ def solve_linear_congruence(A, B):  # 解带余二元一次方程组
 def solve_linear_system(a_arr, b_arr, a, b, c, d):
     Belta = config.Belta
     Gamma = config.Gamma
-    modulo = config.binary_modulo
+    modulo = config.BINARY_MODULO
     indices = np.where((a_arr & 1) == 1)[0] + 1
     low_a = np.sum(indices) % modulo
     indices = np.where(((a_arr >> 1) & 1) == 1)[0] + 1

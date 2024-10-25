@@ -5,7 +5,7 @@ from reedsolo import RSCodec
 
 
 def solve_linear_system(a_arr, b_arr, a, b):
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     q = 4
     a_num = diff_VTCode.Syn(diff_VTCode.diff(a_arr), length) % (q * length)
     b_num = diff_VTCode.Syn(diff_VTCode.diff(b_arr), length) % (q * length)
@@ -25,11 +25,12 @@ def DNA_qary_encode(DNA_matrix):
     for i in range(len(DNA_matrix)):
         arr = sub_encode(np.array(list(DNA_matrix[i])))
         result.append("".join(arr))
+        simple_progress_bar(i + 1, len(DNA_matrix), "encode")
     return np.array(result)
 
 
 def sub_encode(DNA_arr):  # 单个DNA序列进行编码（插入人工碱基）实现2删
-    length = config.q_ENCODE_LEN
+    length = Config.q_ENCODE_LEN
     seg_length = config.q_SEGMENT_LEN
     quaternary_arr = DNA2quaternary_arr(DNA_arr)
     separator = np.array([4])
@@ -55,16 +56,22 @@ def DNA_qary_decode(encode_DNA):  # 结果移除人工碱基
     length = config.q_ENCODE_LEN
     seg_length = config.q_SEGMENT_LEN
     total_length = length * 4 + 3
+    error_seq_cnt = 0
     for i in range(len(encode_DNA)):
         if len(encode_DNA[i]) == total_length:
             arr = decode_from_no_deletion(np.array(list(encode_DNA[i])))
         elif len(encode_DNA[i]) == total_length - 1:  # 单删
             arr = decode_from_one_deletion(np.array(list(encode_DNA[i])))
         elif len(encode_DNA[i]) == total_length - 2:  # 二删
-            arr = decode_from_two_deletions(np.array(list(encode_DNA[i])))
+            arr, flag = decode_from_two_deletions(np.array(list(encode_DNA[i])))
+            if flag:
+                error_seq_cnt += 1
         else:  # 多删
             arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))
+            error_seq_cnt += 1
         result.append("".join(arr))
+        simple_progress_bar(i + 1, len(encode_DNA), "decode")
+    # print("译码失败的序列个数：", error_seq_cnt, " 总共的序列个数：", len(encode_DNA))
     return np.array(result)
 
 
@@ -236,12 +243,12 @@ def decode_from_two_deletions(DNA_arr):  # 参数带人工碱基
     indices = np.where(DNA_arr == config.delimiterChar)[0]
     # 根据分隔符判断错误类型
     if len(indices) == 1:
-        result = decode_remove_two_separators(DNA_arr, indices)
+        result, flag = decode_remove_two_separators(DNA_arr, indices)
     elif len(indices) == 2:
-        result = decode_remove_one_separator(DNA_arr, indices)
+        result, flag = decode_remove_one_separator(DNA_arr, indices)
     else:
-        result = decode_remove_zero_separator(DNA_arr, indices)
-    return result
+        result, flag = decode_remove_zero_separator(DNA_arr, indices)
+    return result, flag
 
 
 def decode_remove_two_separators(DNA_arr, indices):
@@ -265,7 +272,7 @@ def decode_remove_two_separators(DNA_arr, indices):
     d_arr = np.delete(diff_VTCode.diff(d_encode_arr), deleted_indices)
     ab_arr = np.concatenate((a_arr, b_arr))
     cd_arr = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-    return np.concatenate((ab_arr, cd_arr))
+    return np.concatenate((ab_arr, cd_arr)), True
 
 
 def decode_remove_one_separator(DNA_arr, indices):
@@ -341,7 +348,7 @@ def decode_remove_one_separator(DNA_arr, indices):
                 b_arr = diff_VTCode.del_correcting(b_arr, b_num)
     ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
     cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-    return np.concatenate((ab_DNA, cd_DNA))
+    return np.concatenate((ab_DNA, cd_DNA)), True
 
 
 def decode_remove_zero_separator(DNA_arr, indices):
@@ -375,7 +382,7 @@ def decode_remove_zero_separator(DNA_arr, indices):
         d_arr = np.delete(diff_VTCode.diff(d_encode_arr), deleted_indices)
         ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
         cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-        return np.concatenate((ab_DNA, cd_DNA))
+        return np.concatenate((ab_DNA, cd_DNA)), False
     if len(a_arr) == length - 1 and len(b_arr) == length - 1:
         c_arr = np.delete(diff_VTCode.diff(c_encode_arr), deleted_indices)
         d_arr = np.delete(diff_VTCode.diff(d_encode_arr), deleted_indices)
@@ -408,4 +415,4 @@ def decode_remove_zero_separator(DNA_arr, indices):
         d_arr = diff_VTCode.dec_diff_vt(d_encode_arr, d_num)
     ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
     cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-    return np.concatenate((ab_DNA, cd_DNA))
+    return np.concatenate((ab_DNA, cd_DNA)), True

@@ -11,27 +11,25 @@ def array2image(flattened_array, original_shape):  # 通过imshow函数展示照
 
 def image_encode(image_numpy, type=0):
     if type == 0:
-        length = config.SEGMENT_LEN
+        length = Config.SEGMENT_LEN
     else:
-        length = (config.q_SEGMENT_LEN + config.q_ENCODE_LEN) // 2
+        length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     arr = image_numpy.ravel()
     if arr is None:
         print("文件路径无效!")
         sys.exit()
+    date_seq_cnt = len(arr)
     # 分段（n段）
     arr_segments = split_segments(arr, length)
     # rs编码（n+k段）
-    rs_segments = RS_encode(arr_segments)
+    rs_segments = RS_encode(arr_segments, config.RS_image)
     # 数组转四进制
-    quaternary_matrix_1 = byte2quaternary_matrix(rs_segments)
-    # 转DNA序列
-    DNA_matrix = quaternary2DNA_matrix(quaternary_matrix_1)
-    # 对DNA序列编码（结果含人工碱基）
+    DNA_matrix = byte2DNA_arr(rs_segments)
     if type == 0:
         encode_DNA = DNA_binary_encode(DNA_matrix)
     else:
         encode_DNA = DNA_qary_encode(DNA_matrix)
-    return encode_DNA
+    return encode_DNA, date_seq_cnt
 
 
 def image_decode(deleted_DNA, shape, type=0):
@@ -43,13 +41,9 @@ def image_decode(deleted_DNA, shape, type=0):
         decode_DNA = DNA_binary_decode(deleted_DNA)
     else:
         decode_DNA = DNA_qary_decode(deleted_DNA)
-    # print(np.array_equal(decode_DNA, DNA_matrix))
-    quaternary_matrix = DNA2quaternary_matrix(decode_DNA)
-    # 四进制转数组
-    byte_matrix = quaternary2byte_matrix(quaternary_matrix)
-    # rs译码
+    byte_matrix = DNA2byte_arr(decode_DNA)
     try:
-        image_matrix = RS_decode(byte_matrix)
+        image_matrix = RS_decode(byte_matrix, config.RS_image)
         flag = True
     except ReedSolomonError:
         print("rs译码失败！")

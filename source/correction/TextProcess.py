@@ -4,6 +4,8 @@ from .DNA_BinaryEncoder import DNA_binary_encode, DNA_binary_decode
 from .DNA_QaryEncoder import DNA_qary_encode, DNA_qary_decode
 
 from . import Config
+
+
 def text_encode(original_text, type=0):
     if type == 0:
         length = Config.SEGMENT_LEN
@@ -30,22 +32,21 @@ def text_decode(deleted_DNA, arr_length, type=0):
     else:
         length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     if type == 0:
-        decode_DNA = DNA_binary_decode(deleted_DNA)
+        decode_DNA, result_str = DNA_binary_decode(deleted_DNA)
     else:
-        decode_DNA = DNA_qary_decode(deleted_DNA)
+        decode_DNA, result_str = DNA_qary_decode(deleted_DNA)
     byte_matrix = DNA2byte_arr(decode_DNA)
     try:
         text_matrix = RS_decode(byte_matrix, Config.RS_text)
-        flag = True
     except ReedSolomonError:
         print("rs译码失败！")
-        flag = False
+        result_str = result_str + "\nrs译码失败！"
         text_matrix = extractInformationFromRS(byte_matrix)
     # 合并多列
     estimate_arr = merge_segments(text_matrix, length)
     modified_arr = estimate_arr[:arr_length]  # 因为分段的不能整除，最后一个段补0了
     byte_array = bytes(modified_arr)
-    return byte_array.decode('utf-8'), flag
+    return byte_array.decode('utf-8'), result_str
 
 
 def extractInformationFromRS(byte_matrix):

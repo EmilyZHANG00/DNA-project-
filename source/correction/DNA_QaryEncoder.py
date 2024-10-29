@@ -71,8 +71,8 @@ def DNA_qary_decode(encode_DNA):  # 结果移除人工碱基
             error_seq_cnt += 1
         result.append("".join(arr))
         simple_progress_bar(i + 1, len(encode_DNA), "decode")
-    # print("译码失败的序列个数：", error_seq_cnt, " 总共的序列个数：", len(encode_DNA))
-    return np.array(result)
+    result_str = "译码失败的序列个数：" + str(error_seq_cnt) + "，总共的序列个数：" + str(len(encode_DNA));
+    return np.array(result), result_str
 
 
 def decode_from_multi_deletions(DNA_arr):  # 处理多删

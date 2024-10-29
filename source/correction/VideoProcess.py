@@ -37,7 +37,7 @@ def video_encode(cap, type=0):
                     bytes_arr.append(frame[y, x, 1])
                     bytes_arr.append(frame[y, x, 2])
                     points_cnt += 1
-        simple_progress_bar(frame_idx,total_frames,"prepare_frames")
+        simple_progress_bar(frame_idx, total_frames, "prepare_frames")
         # 更新参考帧
         lastframe = frame.astype(np.int8)
         # 读取下一帧
@@ -71,17 +71,16 @@ def video_decode(deleted_DNA, n, frame_shape, type=0):
     else:
         length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     if type == 0:
-        decode_DNA = DNA_binary_decode(deleted_DNA)
+        decode_DNA, result_str = DNA_binary_decode(deleted_DNA)
     else:
-        decode_DNA = DNA_qary_decode(deleted_DNA)
+        decode_DNA, result_str = DNA_qary_decode(deleted_DNA)
     byte_matrix = DNA2byte_arr(decode_DNA)
     # rs译码
     try:
         video_matrix = RS_decode(byte_matrix, Config.RS_video)
-        flag = True
     except ReedSolomonError:
         print("rs译码失败！")
-        flag = False
+        result_str = result_str + "\nrs译码失败！"
         video_matrix = extractInformationFromRS(byte_matrix)
     # 合并多列
     estimate_arr = merge_segments(video_matrix, length)
@@ -116,7 +115,7 @@ def video_decode(deleted_DNA, n, frame_shape, type=0):
         index += 3
         lastpos = pos
     frames.append(frame.copy())
-    return frames, flag
+    return frames, result_str
 
 
 def extractInformationFromRS(byte_matrix):

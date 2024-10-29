@@ -60,18 +60,23 @@ def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
     length = Config.SEGMENT_LEN
     encode_length = Config.ENCODE_LEN
     total_length = (length + encode_length) * 2 + 3
+    error_seq_cnt = 0
     for i in range(len(encode_DNA)):
         if len(encode_DNA[i]) == total_length:
             arr = decode_from_no_deletion(np.array(list(encode_DNA[i])))
         elif len(encode_DNA[i]) == total_length - 1:  # 单删
             arr = decode_from_one_deletion(np.array(list(encode_DNA[i])))
         elif len(encode_DNA[i]) == total_length - 2:  # 二删
-            arr = decode_from_two_deletions(np.array(list(encode_DNA[i])))
+            arr, flag = decode_from_two_deletions(np.array(list(encode_DNA[i])))
+            if flag:
+                error_seq_cnt += 1
         else:  # 多删
             arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))
+            error_seq_cnt += 1
         result.append("".join(arr))
         simple_progress_bar(i + 1, len(encode_DNA), "decode")
-    return np.array(result)
+    result_str = "译码失败的序列个数：" + str(error_seq_cnt) + "，总共的序列个数：" + str(len(encode_DNA))
+    return np.array(result), result_str
 
 
 def decode_from_multi_deletions(DNA_arr):  # 处理多删
@@ -250,12 +255,12 @@ def decode_from_two_deletions(DNA_arr):  # 参数带人工碱基
     indices = np.where(DNA_arr == Config.delimiterChar)[0]
     # 根据分隔符判断错误类型
     if len(indices) == 1:
-        result = decode_remove_two_separators(DNA_arr, indices)
+        result, flag = decode_remove_two_separators(DNA_arr, indices)
     elif len(indices) == 2:
-        result = decode_remove_one_separator(DNA_arr, indices)
+        result, flag = decode_remove_one_separator(DNA_arr, indices)
     else:
-        result = decode_remove_zero_separator(DNA_arr, indices)
-    return result
+        result, flag = decode_remove_zero_separator(DNA_arr, indices)
+    return result, flag
 
 
 def mod_inverse(a, m):  # 求逆元
@@ -347,7 +352,7 @@ def decode_remove_two_separators(DNA_arr, indices):
     d_arr = np.delete(d_encode_arr, deleted_indices)
     ab_arr = np.concatenate((a_arr, b_arr))
     cd_arr = np.concatenate((c_arr, d_arr))
-    return np.concatenate((ab_arr, cd_arr))
+    return np.concatenate((ab_arr, cd_arr)), True
 
 
 def decode_remove_one_separator(DNA_arr, indices):
@@ -418,7 +423,6 @@ def decode_remove_one_separator(DNA_arr, indices):
                 low_d_arr = binary_VTCode.vt_decode(d_encode_arr & 1, low_d)
                 high_d_arr = binary_VTCode.vt_decode((d_encode_arr >> 1) & 1, high_d)
                 d_arr = (high_d_arr << 1) | low_d_arr
-
     else:
         # 删除第三个分隔符
         a_arr = DNA2quaternary_arr(DNA_arr[:indices[0]])
@@ -453,7 +457,7 @@ def decode_remove_one_separator(DNA_arr, indices):
                 b_arr = (high_b_arr << 1) | low_b_arr
     ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
     cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-    return np.concatenate((ab_DNA, cd_DNA))
+    return np.concatenate((ab_DNA, cd_DNA)), True
 
 
 def decode_remove_zero_separator(DNA_arr, indices):
@@ -488,7 +492,7 @@ def decode_remove_zero_separator(DNA_arr, indices):
         d_arr = np.delete(d_encode_arr, deleted_indices)
         ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
         cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-        return np.concatenate((ab_DNA, cd_DNA))
+        return np.concatenate((ab_DNA, cd_DNA)), False
     if len(a_arr) == length - 1 and len(b_arr) == length - 1:
         c_arr = np.delete(c_encode_arr, deleted_indices)
         d_arr = np.delete(d_encode_arr, deleted_indices)
@@ -556,4 +560,4 @@ def decode_remove_zero_separator(DNA_arr, indices):
         d_arr = (high_d_arr << 1) | low_d_arr
     ab_DNA = np.concatenate((quaternary2DNA_arr(a_arr), quaternary2DNA_arr(b_arr)))
     cd_DNA = np.concatenate((quaternary2DNA_arr(c_arr), quaternary2DNA_arr(d_arr)))
-    return np.concatenate((ab_DNA, cd_DNA))
+    return np.concatenate((ab_DNA, cd_DNA)), True

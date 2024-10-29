@@ -6,9 +6,12 @@ import correction.Config as config
 import cv2
 import sys
 import matplotlib.pyplot as plt
+import os
+import time
 
 
 def imageTest_Correction(image_path, type=0):
+    start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
         sys.exit()
@@ -20,13 +23,25 @@ def imageTest_Correction(image_path, type=0):
     # 通过删除信道
     deleted_DNA = channel.random_channel_Probabilistic(encode_DNA, config.BASE_LOSS_RATE)
     shape = image.shape
-    estimate_image, flag = image_decode(deleted_DNA, shape, type)
+    estimate_image, decode_str = image_decode(deleted_DNA, shape, type)
     difference = cv2.absdiff(image, estimate_image)
-    show_images(image, estimate_image, difference)
-    return flag
+    save_images(image, estimate_image, difference, image_path)
+    end_time = time.time()  # 记录结束时间
+    elapsed_time = end_time - start_time  # 计算耗时
+    result_str = "图片编解码耗时：" + str(elapsed_time) + "秒\n"
+    result_str = result_str + decode_str
+    print(result_str)
+    return result_str
 
 
-def show_images(img1, img2, img3):
+def save_images(img1, img2, img3, image_path):
+    # 创建结果的绝对路径
+    directory = os.path.dirname(image_path)
+    filename = os.path.basename(image_path)
+    name, extension = os.path.splitext(filename)
+    new_filename = f"{name}_correct_estimate{extension}"
+    new_image_path = os.path.join(directory, new_filename)
+
     fig, axs = plt.subplots(1, 3, figsize=(15, 5))
     axs[0].imshow(img1)
     axs[0].set_title('Input Image')
@@ -38,21 +53,33 @@ def show_images(img1, img2, img3):
     axs[2].set_title('Difference Image')
     axs[2].axis('off')
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    # 保存图片到文件
+    plt.savefig(new_image_path)
+    plt.close()
+    print("译码后的图片路径：" + new_image_path)
 
 
 def textTest_Correction(origin_text, type=0):
+    start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
         sys.exit()
     encode_DNA, n = text_encode(origin_text, type)
     # 通过删除信道
     deleted_DNA = channel.random_channel_Probabilistic(encode_DNA, config.BASE_LOSS_RATE)
-    estimate_str, _ = text_decode(deleted_DNA, n, type)
+    estimate_str, decode_str = text_decode(deleted_DNA, n, type)
+    end_time = time.time()  # 记录结束时间
+    elapsed_time = end_time - start_time  # 计算耗时
+    result_str = "图片编解码耗时：" + str(elapsed_time) + "秒\n"
+    result_str = result_str + decode_str
+    print(result_str)
     print("译码后的文本：" + estimate_str)
+    return "译码后的文本：" + estimate_str
 
 
 def videoTest_Correction(video_path, type=0):
+    start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
         sys.exit()
@@ -62,16 +89,27 @@ def videoTest_Correction(video_path, type=0):
         exit()
     encode_DNA, n, frame_shape = video_encode(cap, type)
     deleted_DNA = channel.random_channel_Probabilistic(encode_DNA, config.BASE_LOSS_RATE)
-    estimate_frames, _ = video_decode(deleted_DNA, n, frame_shape, type)
-
+    estimate_frames, decode_str = video_decode(deleted_DNA, n, frame_shape, type)
+    # 创建结果的绝对路径
+    directory = os.path.dirname(video_path)
+    filename = os.path.basename(video_path)
+    name, extension = os.path.splitext(filename)
+    new_filename = f"{name}_correct_estimate{extension}"
+    new_video_path = os.path.join(directory, new_filename)
     # 将帧数组转换为视频
     print("重构后帧数目:", len(estimate_frames), "开始写入视频......")
-    out = cv2.VideoWriter(video_path + "_output.mp4", cv2.VideoWriter_fourcc(*'mp4v'), min(len(estimate_frames), 30),
+    out = cv2.VideoWriter(new_video_path, cv2.VideoWriter_fourcc(*'mp4v'), min(len(estimate_frames), 30),
                           (frame_shape[1], frame_shape[0]))
     for frame in estimate_frames:
         out.write(frame)
     out.release()
-    print(len(estimate_frames))
+    end_time = time.time()  # 记录结束时间
+    elapsed_time = end_time - start_time  # 计算耗时
+    result_str = "图片编解码耗时：" + str(elapsed_time) + "秒\n"
+    result_str = result_str + decode_str
+    print(result_str)
+    # print(len(estimate_frames))
+    return result_str
 
 
 def compare_specific_frames(video_path1, video_path2, frame_number):
@@ -107,9 +145,7 @@ def compare_specific_frames(video_path1, video_path2, frame_number):
     plt.imshow(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
     plt.title('RS_video = 60')
     plt.axis('off')
-
-   # plt.show()
-
+    # plt.show()
     # 释放视频捕获对象
     cap1.release()
     cap2.release()

@@ -38,22 +38,21 @@ def image_decode(deleted_DNA, shape, type=0):
     else:
         length = (Config.q_SEGMENT_LEN + Config.q_ENCODE_LEN) // 2
     if type == 0:
-        decode_DNA = DNA_binary_decode(deleted_DNA)
+        decode_DNA, result_str = DNA_binary_decode(deleted_DNA)
     else:
-        decode_DNA = DNA_qary_decode(deleted_DNA)
+        decode_DNA, result_str = DNA_qary_decode(deleted_DNA)
     byte_matrix = DNA2byte_arr(decode_DNA)
     try:
         image_matrix = RS_decode(byte_matrix, Config.RS_image)
-        flag = True
     except ReedSolomonError:
         print("rs译码失败！")
-        flag = False
+        result_str = result_str + "\nrs译码失败！"
         image_matrix = extractInformationFromRS(byte_matrix)
     # 合并多列
     estimate_arr = merge_segments(image_matrix, length)
     modified_arr = estimate_arr[:np.prod(shape)]  # 因为分段的不能整除，最后一个段补0了
     estimate_image = array2image(modified_arr, shape)
-    return estimate_image, flag
+    return estimate_image, result_str
 
 
 def extractInformationFromRS(byte_matrix):

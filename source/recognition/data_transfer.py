@@ -220,7 +220,8 @@ def decodeToText(RS_ACGT_str_lists,Data_seq_cnt,chunk_size=57):
         print(f"5 恢复后的文本: {restored_text}")
     except UnicodeDecodeError as e:
         print("[ ######## 解码失败,错误过多，无法恢复原信息! #########] details:",e)
-        return ""
+        return f"[ ######## 解码失败,错误过多，无法恢复原信息! #########] details:{e}"
+    return restored_text
 
 
 

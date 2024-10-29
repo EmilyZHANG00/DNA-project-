@@ -71,7 +71,7 @@ def videoTest_Correction(video_path, type=0):
     for frame in estimate_frames:
         out.write(frame)
     out.release()
-    # print(len(estimate_frames))
+    print(len(estimate_frames))
 
 
 def compare_specific_frames(video_path1, video_path2, frame_number):
@@ -108,7 +108,7 @@ def compare_specific_frames(video_path1, video_path2, frame_number):
     plt.title('RS_video = 60')
     plt.axis('off')
 
-    plt.show()
+   # plt.show()
 
     # 释放视频捕获对象
     cap1.release()

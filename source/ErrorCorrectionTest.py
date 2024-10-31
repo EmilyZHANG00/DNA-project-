@@ -8,23 +8,53 @@ import sys
 import matplotlib.pyplot as plt
 import os
 import time
+import numpy as np
 
+
+# def imageTest_Correction(image_path, type=0):
+#     start_time = time.time()  # 记录开始时间
+#     if type not in (0, 1):
+#         print("错误的编码类型!")
+#         sys.exit()
+#     image = plt.imread(image_path)
+#     if image is None:
+#         print("照片路径不存在!")
+#         sys.exit()
+#     encode_DNA, _ = image_encode(image, type)
+#     # 通过删除信道
+#     deleted_DNA = channel.random_channel_Probabilistic(encode_DNA, config.BASE_LOSS_RATE)
+#     shape = image.shape
+#     estimate_image, decode_str = image_decode(deleted_DNA, shape, type)
+#     difference = cv2.absdiff(image, estimate_image)
+#     save_images(image, estimate_image, difference, image_path)
+#     end_time = time.time()  # 记录结束时间
+#     elapsed_time = end_time - start_time  # 计算耗时
+#     result_str = "图片编解码耗时：" + str(elapsed_time) + "秒\n"
+#     result_str = result_str + decode_str
+#     print(result_str)
+#     return result_str
 
 def imageTest_Correction(image_path, type=0):
     start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
         sys.exit()
-    image = cv2.imread(image_path)
-    if image is None:
+    image_float = plt.imread(image_path)
+    if image_float is None:
         print("照片路径不存在!")
         sys.exit()
+    if image_float.dtype == np.float32 or image_float.dtype == np.float64:
+        # 将浮点数缩放到0-255的范围，并转换为uint8
+        image = (image_float * 255).astype(np.uint8)
+    else:
+        # 如果已经是整数，不需要转换
+        image = image_float
     encode_DNA, _ = image_encode(image, type)
     # 通过删除信道
     deleted_DNA = channel.random_channel_Probabilistic(encode_DNA, config.BASE_LOSS_RATE)
     shape = image.shape
     estimate_image, decode_str = image_decode(deleted_DNA, shape, type)
-    difference = cv2.absdiff(image, estimate_image)
+    difference = np.abs(image - estimate_image)
     save_images(image, estimate_image, difference, image_path)
     end_time = time.time()  # 记录结束时间
     elapsed_time = end_time - start_time  # 计算耗时
@@ -32,6 +62,7 @@ def imageTest_Correction(image_path, type=0):
     result_str = result_str + decode_str
     print(result_str)
     return result_str
+
 
 
 def save_images(img1, img2, img3, image_path):
@@ -53,9 +84,9 @@ def save_images(img1, img2, img3, image_path):
     axs[2].set_title('Difference Image')
     axs[2].axis('off')
     plt.tight_layout()
-    # plt.show()
     # 保存图片到文件
-    plt.savefig(new_image_path)
+    plt.savefig(new_image_path,dpi=250)
+    plt.show()
     plt.close()
     print("译码后的图片路径：" + new_image_path)
 
@@ -145,10 +176,20 @@ def compare_specific_frames(video_path1, video_path2, frame_number):
     plt.imshow(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
     plt.title('RS_video = 60')
     plt.axis('off')
-    # plt.show()
+    plt.show()
     # 释放视频捕获对象
     cap1.release()
     cap2.release()
+
+# 通过可视化界面设置参数
+def setPara(baseLoss,rsNumber):
+    if(baseLoss!=0):
+        config.BASE_LOSS_RATE = baseLoss
+    if(rsNumber!=0):
+        config.RS_image = rsNumber
+        config.RS_text = rsNumber
+        config.RS_video = rsNumber
+    return f"当前获取到参数值参数值: 碱基丢失率 {baseLoss}  RS冗余数目{rsNumber} \n"
 
 
 if __name__ == "__main__":
@@ -162,7 +203,7 @@ if __name__ == "__main__":
         origin_text = input("请输入需要编码的文本：")
         try:
             type = int(input("请输入编码类型（0二元、1q元）："))
-            textTest_Correction(origin_text, type)
+            print(textTest_Correction(origin_text, type))
         except ValueError:
             print(f"错误：'{type}' 不是一个有效的编码类型。")
 
@@ -170,7 +211,7 @@ if __name__ == "__main__":
         image_path = input("请输入需要编码图片的路径：")
         try:
             type = int(input("请输入编码类型（0二元、1q元）："))
-            imageTest_Correction(image_path, type)
+            print(imageTest_Correction(image_path, type))
         except ValueError:
             print(f"错误：'{type}' 不是一个有效的编码类型。")
 
@@ -178,7 +219,7 @@ if __name__ == "__main__":
         video_path = input("请输入需要编码视频的路径：")
         try:
             type = int(input("请输入编码类型（0二元、1q元）："))
-            videoTest_Correction(video_path, type)
+            print(videoTest_Correction(video_path, type))
         except ValueError:
             print(f"错误：'{type}' 不是一个有效的编码类型。")
     else:

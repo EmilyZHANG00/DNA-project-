@@ -1,13 +1,13 @@
 
 
 CLUSTER_LOSS_RATE = 0.001   # 簇丢失率
-BASE_LOSS_RATE  = 0.02    # 碱基丢失率
+BASE_LOSS_RATE  = 0.01    # 碱基丢失率
 CLUSTER_SIZE = 20         # 每个簇的平均大小
 
 
 # RS码
 RS_ENCODE_VALID = True   # 是否启用RS编码
-RS_NUMBER = 40         # 生成RS冗余序列数目
+RS_NUMBER =40         # 生成RS冗余序列数目
 RS_FIELD_SIZE = 255
 # DEL_NUM = 5            # 平均每个序列的删除个数
 

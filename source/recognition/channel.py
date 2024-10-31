@@ -55,33 +55,59 @@ def random_channel(sequences,average_clutser_size,average_del_cnt):
     return clusters
 
 
-def random_channel_Probabilistic(sequences,average_clutser_size,lossRateCluster,lossRateBase):
+# def random_channel_Probabilistic(sequences,average_clutser_size,lossRateCluster,lossRateBase):
+#     OriginSequenceCnt = len(sequences)
+#     TotalSequenceCnt = OriginSequenceCnt * average_clutser_size
+#
+#     LossClusterSize = math.floor(lossRateCluster * OriginSequenceCnt)
+#     RemainClusterSize = OriginSequenceCnt - LossClusterSize
+#     print("random_channel_Probabilistic:簇丢失数目为",LossClusterSize)
+#     # 选出丢失的簇的下标,在这些位置插入0
+#     LossClusterIndex = sorted(random.sample(range(0, TotalSequenceCnt), LossClusterSize))
+#     # 未丢失的簇的大小
+#     splits = sorted(random.sample(range(0, TotalSequenceCnt-1), RemainClusterSize-1))
+#     ClustersSizeList = [splits[0]] + [splits[i] - splits[i - 1] for i in range(1, RemainClusterSize - 1)] + [TotalSequenceCnt - splits[-1]]
+#
+#     for idx in LossClusterIndex:
+#         ClustersSizeList.insert(idx,0)
+#
+#     ResultSequences = []
+#     # 构造所有的序列
+#     for i in range(0,OriginSequenceCnt):
+#         ResultSequences += [sequences[i]]* ClustersSizeList[i]
+#
+#     RemainRate = 1-lossRateBase
+#     # 对所有的序列进行随机删除
+#     for i in range(0,len(ResultSequences)):
+#         sequence = ResultSequences[i]
+#         ResultSequences[i] = ''.join([c for c in sequence if random.random() <= RemainRate])
+#
+#     # 组织成二维列表
+#     clusters = []
+#     idx=0
+#     for i in range(0,len(ClustersSizeList)):
+#         clusters.append(ResultSequences[idx:idx+ClustersSizeList[i]])
+#         idx+=ClustersSizeList[i]
+#
+#     return clusters
+
+
+# 不使用簇丢失率时候的随机模拟算法
+def random_channel_Probabilistic(sequences,average_clutser_size,lossRateBase):
     OriginSequenceCnt = len(sequences)
     TotalSequenceCnt = OriginSequenceCnt * average_clutser_size
 
-    LossClusterSize = math.floor(lossRateCluster * OriginSequenceCnt)
-    RemainClusterSize = OriginSequenceCnt - LossClusterSize
-    print("random_channel_Probabilistic:簇丢失数目为",LossClusterSize)
-    # 选出丢失的簇的下标,在这些位置插入0
-    LossClusterIndex = sorted(random.sample(range(0, TotalSequenceCnt), LossClusterSize))
-    # 未丢失的簇的大小
-    splits = sorted(random.sample(range(0, TotalSequenceCnt-1), RemainClusterSize-1))
-    ClustersSizeList = [splits[0]] + [splits[i] - splits[i - 1] for i in range(1, RemainClusterSize - 1)] + [TotalSequenceCnt - splits[-1]]
-
-    for idx in LossClusterIndex:
-        ClustersSizeList.insert(idx,0)
-
+    splits = sorted(random.choices(range(0, TotalSequenceCnt-1), k=OriginSequenceCnt-1))
+    ClustersSizeList = [splits[0]] + [splits[i] - splits[i - 1] for i in range(1, OriginSequenceCnt - 1)] + [TotalSequenceCnt - splits[-1]]
     ResultSequences = []
     # 构造所有的序列
     for i in range(0,OriginSequenceCnt):
         ResultSequences += [sequences[i]]* ClustersSizeList[i]
-
     RemainRate = 1-lossRateBase
     # 对所有的序列进行随机删除
     for i in range(0,len(ResultSequences)):
         sequence = ResultSequences[i]
         ResultSequences[i] = ''.join([c for c in sequence if random.random() <= RemainRate])
-
     # 组织成二维列表
     clusters = []
     idx=0

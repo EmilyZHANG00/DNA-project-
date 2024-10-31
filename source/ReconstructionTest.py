@@ -352,7 +352,7 @@ def imageTest_Reconstruction(image_path,type = 1):
     successRate = recons_success_rate(origin_acgt_seqs,recon_ACGT_seqs,Config.delimiterChar)
     print("序列重构成功率为:",successRate,"重构失败序列数目:",len(erase_list)," ,总序列数目:",len(origin_acgt_seqs))
 
-    output_image_dir =  os.path.join(os.path.dirname(image_path),"imageResult")
+    output_image_dir =  os.path.join(os.path.dirname(image_path),"ResimageResult")
     # 检查文件夹是否存在
     if not os.path.exists(output_image_dir):
         # 不存在则创建文件夹
@@ -438,7 +438,7 @@ def videoTest_Reconstruction(video_path,type = 1):
     k += 1 if (Artificial == True) else 0
     k += 1 if (VTCodeEncode == True) else 0
 
-    output_video_dir = os.path.join(os.path.dirname(video_path),"videoResult")
+    output_video_dir = os.path.join(os.path.dirname(video_path),"ResvideoResult")
     # 检查文件夹是否存在
     if not os.path.exists(output_video_dir):
         # 不存在则创建文件夹
@@ -489,7 +489,7 @@ def setPara(baseLoss = Config.BASE_LOSS_RATE,rsNumber=Config.RS_NUMBER,cluSize=C
     if(rsNumber!=0):
         Config.RS_NUMBER = rsNumber
     else:
-        Config.RS_NUMBER = 40
+        Config.RS_NUMBER = 30
 
     if(cluSize!=0):
         Config.CLUSTER_SIZE = cluSize
@@ -498,9 +498,12 @@ def setPara(baseLoss = Config.BASE_LOSS_RATE,rsNumber=Config.RS_NUMBER,cluSize=C
     return f"当前获取到3个参数值:{baseLoss}  {rsNumber}  {cluSize} ;设置后的参数为: 碱基丢失率 {Config.BASE_LOSS_RATE}  RS冗余数目 {Config.RS_NUMBER}  测序深度:{Config.CLUSTER_SIZE} \n"
 
 def all_test():
-    Config.RS_NUMBER=10
-    res = textTest_Reconstruction(originText,1)     # 不加分隔符
-    print(res)
+    # Config.RS_NUMBER=1
+    # # originText="Otherwise, it is not possible to control the parameters through the visual interface"
+    # # originText = "DNA存储与传统的存储介质不同，DNA存储技术有如下显著优势: 1)DNA存储密度高。一个DNA分子可以保留一个物种的全部遗传信息，最大的人类染色体含有近2.5亿个碱基对，那么就意味着一条和人手差不多长的DNA链,就可以存储1EB（1EB=10.74亿G）数据。与硬盘和闪存的数据存储密度相比，硬盘存储每立方厘米约为1013位，闪存存储约为1016位,而DNA存储的密度约为1019位。2）DNA分子存储具有稳定性。今年2月，国际顶级学术期刊Nature上的一篇论文称古生物学家在西伯利亚东北部的永久冻土层中提取到距今120万年猛犸象的遗传物质，并对其DNA进行了解析，这也进一步刷新了DNA分子的保存年代纪录。据悉，DNA至少可保留上百年的数据，相比之下，硬盘、磁带的数据最多只能保留约10年。3）DNA存储维护成本低。以DNA形式存储的数据易于维护，和传统的数据中心不同，不需要大量的人力、财力投入，仅需要保存在低温环境中。在能耗方面,1GB的数据硬盘存储能耗约为0.04W,而DNA存储的能耗则小于10-10W。"
+    # originText = "阿松大啊实打实阿松大"
+    # res = textTest_Reconstruction(originText,1)     # 不加分隔符
+    # print(res)
 
     # res = textTest_Reconstruction(originText,2)      # 加人工碱基作为分隔符，全空间
     # print(res)
@@ -517,14 +520,14 @@ def all_test():
     # res = imageTest_Reconstruction(imagePath,3)      # 人工碱基 + VT码
     # print(res)
 
-    # videoPath = r"D:\Desktop\Dna-encoding\test\FY-3D MERSI 160p.mp4"
-    #
-    # # videoPath = r"D:\Desktop\Dna-encoding\test\test160p.mp4"
-    # res = videoTest_Reconstruction(videoPath,1)
-    # print(res)
-    # res = videoTest_Reconstruction(videoPath,2)
-    # print(res)
-    # res = videoTest_Reconstruction(videoPath,3)
-    # print(res)
+    videoPath = r"D:\Desktop\Dna-encoding\test\FY-3D MERSI 160p.mp4"
+
+    # videoPath = r"D:\Desktop\Dna-encoding\test\test160p.mp4"
+    res = videoTest_Reconstruction(videoPath,3)
+    print(res)
+    res = videoTest_Reconstruction(videoPath,2)
+    print(res)
+    res = videoTest_Reconstruction(videoPath,1)
+    print(res)
 
 all_test()

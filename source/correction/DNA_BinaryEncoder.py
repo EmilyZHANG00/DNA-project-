@@ -68,7 +68,7 @@ def DNA_binary_decode(encode_DNA):  # 结果移除人工碱基
             arr = decode_from_one_deletion(np.array(list(encode_DNA[i])))
         elif len(encode_DNA[i]) == total_length - 2:  # 二删
             arr, flag = decode_from_two_deletions(np.array(list(encode_DNA[i])))
-            if flag:
+            if flag == False:
                 error_seq_cnt += 1
         else:  # 多删
             arr = decode_from_multi_deletions(np.array(list(encode_DNA[i])))

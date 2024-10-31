@@ -39,8 +39,8 @@ def text_decode(deleted_DNA, arr_length, type=0):
     try:
         text_matrix = RS_decode(byte_matrix, Config.RS_text)
     except ReedSolomonError:
-        print("rs译码失败！")
-        result_str = result_str + "\nrs译码失败！"
+        print("解码失败率超过RS恢复能力！")
+        result_str = result_str + "\n解码失败率超过RS恢复能力！"
         text_matrix = extractInformationFromRS(byte_matrix)
     # 合并多列
     estimate_arr = merge_segments(text_matrix, length)

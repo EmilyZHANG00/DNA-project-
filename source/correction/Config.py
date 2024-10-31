@@ -1,5 +1,8 @@
+EncodeMode = '2'
+
 DEL_NUM = 1  # 平均每个序列的删除个数
 BASE_LOSS_RATE  = 0.005    # 碱基丢失率
+
 
 # RS编码
 RS_image = 60

@@ -523,7 +523,7 @@ def RSdecode(rs_bin_str_lists,RS_NUMBER,Data_seq_cnt,erase_list):
     for rs_bin_str in rs_bin_str_lists:
         bytes_from_binary = bytes([int(rs_bin_str[i:i + 8], 2) for i in range(0, len(rs_bin_str), 8)])
         rs_bytes_lines.append(bytes_from_binary)
-
+    print(rs_bin_str_lists,rs_bytes_lines)
     if(Config.RS_ENCODE_VALID is False):
         return rs_bytes_lines
 
@@ -531,7 +531,7 @@ def RSdecode(rs_bin_str_lists,RS_NUMBER,Data_seq_cnt,erase_list):
     rs_fail_return = []
     for i in range(0, len(rs_bytes_lines), Config.RS_FIELD_SIZE):
         # 获取当前块的前B个元素
-        block = rs_bytes_lines[i:min(len(rs_bytes_lines),i+Config.RS_FIELD_SIZE)-Config.RS_NUMBER]
+        block = rs_bytes_lines[i:min(len(rs_bytes_lines),i+Config.RS_FIELD_SIZE)-RS_NUMBER]
         # 将当前块的元素添加到结果列表中
         rs_fail_return.extend(block)
     col_bytestr_list = []

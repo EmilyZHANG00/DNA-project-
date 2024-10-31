@@ -79,8 +79,8 @@ def video_decode(deleted_DNA, n, frame_shape, type=0):
     try:
         video_matrix = RS_decode(byte_matrix, Config.RS_video)
     except ReedSolomonError:
-        print("rs译码失败！")
-        result_str = result_str + "\nrs译码失败！"
+        print("解码失败率超过RS恢复能力！")
+        result_str = result_str + "\n解码失败率超过RS恢复能力！"
         video_matrix = extractInformationFromRS(byte_matrix)
     # 合并多列
     estimate_arr = merge_segments(video_matrix, length)

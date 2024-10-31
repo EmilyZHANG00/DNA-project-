@@ -35,6 +35,10 @@ import numpy as np
 #     return result_str
 
 def imageTest_Correction(image_path, type=0):
+    if(type ==0):
+        config.EncodeMode = '2'
+    else:
+        config.EncodeMode = 'q'
     start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
@@ -67,10 +71,14 @@ def imageTest_Correction(image_path, type=0):
 
 def save_images(img1, img2, img3, image_path):
     # 创建结果的绝对路径
-    directory = os.path.dirname(image_path)
+
+    directory = os.path.join(os.path.dirname(image_path),"ErrCorrImageResult")
+    if not os.path.exists(directory):
+        # 不存在则创建文件夹
+        os.makedirs(directory)
     filename = os.path.basename(image_path)
     name, extension = os.path.splitext(filename)
-    new_filename = f"{name}_correct_estimate{extension}"
+    new_filename = f"{name}-{config.BASE_LOSS_RATE}-{config.RS_image}-{config.EncodeMode}{extension}"
     new_image_path = os.path.join(directory, new_filename)
 
     fig, axs = plt.subplots(1, 3, figsize=(15, 5))
@@ -92,6 +100,10 @@ def save_images(img1, img2, img3, image_path):
 
 
 def textTest_Correction(origin_text, type=0):
+    if(type ==0):
+        config.EncodeMode = '2'
+    else:
+        config.EncodeMode = 'q'
     start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
@@ -102,7 +114,7 @@ def textTest_Correction(origin_text, type=0):
     estimate_str, decode_str = text_decode(deleted_DNA, n, type)
     end_time = time.time()  # 记录结束时间
     elapsed_time = end_time - start_time  # 计算耗时
-    result_str = "图片编解码耗时：" + str(elapsed_time) + "秒\n"
+    result_str = "文本编解码耗时：" + str(elapsed_time) + "秒\n"
     result_str = result_str + decode_str
     print(result_str)
     print("译码后的文本：" + estimate_str)
@@ -110,6 +122,10 @@ def textTest_Correction(origin_text, type=0):
 
 
 def videoTest_Correction(video_path, type=0):
+    if(type ==0):
+        config.EncodeMode = '2'
+    else:
+        config.EncodeMode = 'q'
     start_time = time.time()  # 记录开始时间
     if type not in (0, 1):
         print("错误的编码类型!")
@@ -122,10 +138,13 @@ def videoTest_Correction(video_path, type=0):
     deleted_DNA = channel.random_channel_Probabilistic(encode_DNA, config.BASE_LOSS_RATE)
     estimate_frames, decode_str = video_decode(deleted_DNA, n, frame_shape, type)
     # 创建结果的绝对路径
-    directory = os.path.dirname(video_path)
+    directory = os.path.join(os.path.dirname(video_path),"ErrCorrVedioResult")
+    if not os.path.exists(directory):
+        # 不存在则创建文件夹
+        os.makedirs(directory)
     filename = os.path.basename(video_path)
     name, extension = os.path.splitext(filename)
-    new_filename = f"{name}_correct_estimate{extension}"
+    new_filename = f"{name}-{config.BASE_LOSS_RATE}-{config.RS_video}-{config.EncodeMode}{extension}"
     new_video_path = os.path.join(directory, new_filename)
     # 将帧数组转换为视频
     print("重构后帧数目:", len(estimate_frames), "开始写入视频......")
@@ -136,7 +155,7 @@ def videoTest_Correction(video_path, type=0):
     out.release()
     end_time = time.time()  # 记录结束时间
     elapsed_time = end_time - start_time  # 计算耗时
-    result_str = "图片编解码耗时：" + str(elapsed_time) + "秒\n"
+    result_str = "视频编解码耗时：" + str(elapsed_time) + "秒\n"
     result_str = result_str + decode_str
     print(result_str)
     # print(len(estimate_frames))

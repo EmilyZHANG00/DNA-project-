@@ -1,13 +1,13 @@
 EncodeMode = '2'
 
 DEL_NUM = 1  # 平均每个序列的删除个数
-BASE_LOSS_RATE  = 0.005    # 碱基丢失率
+BASE_LOSS_RATE  = 0.007    # 碱基丢失率
 
 
 # RS编码
 RS_image = 60
-RS_text = 60
-RS_video= 60
+RS_text = 5
+RS_video= 80
 RS_SIZE = 255
 
 # 二元

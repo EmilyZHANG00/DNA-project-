@@ -520,9 +520,9 @@ def all_test():
     # res = imageTest_Reconstruction(imagePath,3)      # 人工碱基 + VT码
     # print(res)
 
-    videoPath = r"D:\Desktop\Dna-encoding\test\FY-3D MERSI 160p.mp4"
+    # videoPath = r"D:\Desktop\Dna-encoding\test\FY-3D MERSI 160p.mp4"
 
-    # videoPath = r"D:\Desktop\Dna-encoding\test\test160p.mp4"
+    videoPath = r"D:\Desktop\Dna-encoding\test\test240p.mp4"
     res = videoTest_Reconstruction(videoPath,3)
     print(res)
     res = videoTest_Reconstruction(videoPath,2)

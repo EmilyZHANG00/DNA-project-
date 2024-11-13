@@ -2,7 +2,7 @@
 
 CLUSTER_LOSS_RATE = 0.001   # 簇丢失率
 BASE_LOSS_RATE  = 0.01    # 碱基丢失率
-CLUSTER_SIZE = 20         # 每个簇的平均大小
+CLUSTER_SIZE = 25         # 每个簇的平均大小
 
 
 # RS码

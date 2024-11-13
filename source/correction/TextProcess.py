@@ -46,6 +46,7 @@ def text_decode(deleted_DNA, arr_length, type=0):
     estimate_arr = merge_segments(text_matrix, length)
     modified_arr = estimate_arr[:arr_length]  # 因为分段的不能整除，最后一个段补0了
     byte_array = bytes(modified_arr)
+    print( byte_array.decode('utf-8'), "\n",result_str)
     return byte_array.decode('utf-8'), result_str
 
 
